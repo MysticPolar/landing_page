@@ -6,7 +6,7 @@
 <title>Owlpo — The Owl's Postoffice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+DW+Pica:ital@0;1&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+DW+Pica:ital@0;1&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Mono:wght@400;500&family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
   :root {
@@ -132,8 +132,10 @@
     gap: 2rem;
   }
   .nav-brand {
-    font-family: 'IM Fell English', serif;
-    font-size: clamp(1rem, 1.4vw, 1.28rem);
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(0.95rem, 1.35vw, 1.18rem);
+    font-weight: 600;
+    letter-spacing: 0.01em;
     color: rgba(255, 255, 255, 0.94);
     text-decoration: none;
     text-shadow: 0 1px 12px rgba(0, 0, 0, 0.35);
@@ -148,10 +150,12 @@
     text-shadow: 0 1px 6px rgba(255, 252, 240, 0.55);
   }
   .nav-brand .brand-sub {
+    font-family: 'Lora', Georgia, serif;
+    font-weight: 400;
     font-style: italic;
-    font-size: 0.75em;
-    opacity: 0.68;
-    letter-spacing: 0.12em;
+    font-size: 0.78em;
+    opacity: 0.62;
+    letter-spacing: 0.04em;
   }
   .nav-links {
     list-style: none;
@@ -160,9 +164,9 @@
     gap: clamp(1rem, 2vw, 2rem);
   }
   .nav-links a {
-    font-family: 'IM Fell English', serif;
-    font-size: 0.78rem;
-    letter-spacing: 0.1em;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
     color: rgba(255, 255, 255, 0.78);
     text-decoration: none;
     text-transform: uppercase;
@@ -198,6 +202,72 @@
     background: var(--gold);
     color: var(--ink);
     text-shadow: none;
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.65rem, 1.8vw, 1.15rem);
+    margin-left: auto;
+  }
+  .nav-lang-select {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: none;
+    color: rgba(255, 255, 255, 0.88);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 2px;
+    padding: 0.42rem 0.55rem;
+    cursor: pointer;
+    max-width: 5.5rem;
+    transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+  }
+  .nav-lang-select:hover,
+  .nav-lang-select:focus-visible {
+    border-color: rgba(255, 255, 255, 0.45);
+    outline: none;
+  }
+  .site-nav.scrolled .nav-lang-select {
+    color: var(--ink-soft);
+    background: rgba(28, 24, 18, 0.06);
+    border-color: rgba(28, 24, 18, 0.2);
+  }
+  .site-nav.scrolled .nav-lang-select:hover,
+  .site-nav.scrolled .nav-lang-select:focus-visible {
+    border-color: rgba(28, 24, 18, 0.35);
+  }
+
+  /* Chinese locale — literary serif tuned for mixed EN book titles */
+  body.lang-zh {
+    font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'SimSun', 'Crimson Pro', Georgia, serif;
+  }
+  body.lang-zh .display,
+  body.lang-zh .hero-title,
+  body.lang-zh .beat-title,
+  body.lang-zh .closing-headline,
+  body.lang-zh .functions-title,
+  body.lang-zh .faq-title,
+  body.lang-zh .intermission-line,
+  body.lang-zh .reserve-header h2,
+  body.lang-zh .tier-head h3,
+  body.lang-zh .explainer h3 {
+    font-family: 'Noto Serif SC', 'IM Fell English', 'Cormorant Garamond', Georgia, serif;
+  }
+  body.lang-zh .italic-accent,
+  body.lang-zh .eyebrow,
+  body.lang-zh .beat-eyebrow {
+    font-family: 'Noto Serif SC', 'IM Fell English', serif;
+  }
+  body.lang-zh .eyebrow {
+    letter-spacing: 0.18em;
+  }
+  body.lang-zh .nav-brand {
+    font-family: 'Noto Serif SC', 'Lora', Georgia, serif;
+  }
+  body.lang-zh .nav-brand .brand-sub {
+    font-family: 'Noto Serif SC', 'Lora', Georgia, serif;
   }
 
   /* ======================================================
@@ -627,11 +697,11 @@
   .explainer h3 {
     font-family: 'IM Fell English', serif;
     font-weight: 400;
-    font-size: clamp(1.6rem, 2.8vw, 2.4rem);
-    line-height: 1.05;
-    margin: 0 0 0.85rem;
+    font-size: clamp(1.9rem, 3.4vw, 2.9rem);
+    line-height: 1.04;
+    margin: 0 0 0.65rem;
     color: var(--ink);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
   }
   .explainer h3 em {
     font-style: italic;
@@ -3032,11 +3102,6 @@
     line-height: 1.5;
   }
   .login-footer p + p { margin-top: 0.48rem; }
-  .login-footer .login-invite-hint {
-    margin-top: 0.6rem;
-    opacity: 0.65;
-    font-size: 0.74rem;
-  }
   .login-footer a {
     color: var(--earth-deep);
     font-family: 'IM Fell English', serif;
@@ -3163,6 +3228,18 @@
     max-width: 38ch;
     opacity: 0.85;
   }
+  .login-welcome-insight--prominent {
+    font-family: 'Lora', Georgia, serif;
+    font-style: italic;
+    font-size: clamp(1.02rem, 2.4vw, 1.22rem);
+    line-height: 1.48;
+    color: var(--ink);
+    opacity: 1;
+    font-weight: 500;
+    max-width: 36ch;
+    letter-spacing: 0.01em;
+    text-wrap: balance;
+  }
   .login-step2-cta {
     width: 100%;
     padding: 0.9rem 1.4rem;
@@ -3192,6 +3269,30 @@
     margin: 0;
     opacity: 0.72;
   }
+
+  .login-form-error {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--wax);
+    text-align: center;
+    margin: 0 0 0.65rem;
+    opacity: 0.9;
+  }
+  .login-form-error[hidden] { display: none; }
+
+  .login-streak-badge.is-founder {
+    background: linear-gradient(145deg, rgba(107, 44, 32, 0.12), rgba(168, 134, 84, 0.1));
+    border-color: rgba(168, 134, 84, 0.3);
+  }
+  .login-streak-badge.is-founder .login-streak-count {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .login-streak-badge.is-founder .login-streak-label { display: none; }
 
   @media (max-width: 480px) {
     .login-card { padding: 2.4rem 1.6rem 2.2rem; max-width: 100%; }
@@ -3384,12 +3485,19 @@
 
 <nav class="site-nav" id="mainNav" aria-label="Primary navigation">
   <div class="nav-inner">
-    <a class="nav-brand" href="#" aria-label="Owlpo home">
+    <a class="nav-brand" href="#" data-i18n="nav.brand" data-i18n-aria-key="nav.brandAria" aria-label="Owlpo home">
       Owlpo <span class="brand-sub">— The Owl's Postoffice</span>
     </a>
-    <ul class="nav-links">
-      <li><a class="nav-cta" href="#" id="loginTrigger" aria-haspopup="dialog" aria-controls="loginModal">Login</a></li>
-    </ul>
+    <div class="nav-actions">
+      <label for="owlpoLangSelect" class="sr-only"><span data-i18n="nav.langLabel">Language</span></label>
+      <select id="owlpoLangSelect" class="nav-lang-select" autocomplete="off">
+        <option value="en">EN</option>
+        <option value="zh">中文</option>
+      </select>
+      <ul class="nav-links">
+        <li><a class="nav-cta" href="#" id="loginTrigger" aria-haspopup="dialog" aria-controls="loginModal" data-i18n="nav.login">Login</a></li>
+      </ul>
+    </div>
   </div>
 </nav>
 
@@ -3402,12 +3510,12 @@
     <img src="avatars/owl_avatar_default_128.png" alt="" width="128" height="128" decoding="async">
   </div>
   <div class="hero-content">
-    <div class="hero-eyebrow">✦ &nbsp; A Literary Sanctuary &nbsp; ✦</div>
-    <h1 class="hero-title">I read,<br><em>therefore I am.</em></h1>
+    <div class="hero-eyebrow" data-i18n="hero.eyebrow">✦ &nbsp; A Literary Sanctuary &nbsp; ✦</div>
+    <h1 class="hero-title" data-i18n="hero.title">I read,<br><em>therefore I am.</em></h1>
     <div class="hero-cta">
-      <a href="#reserve" class="btn-primary" aria-label="Reserve my spot">Reserve my spot</a>
+      <a href="#reserve" class="btn-primary" data-i18n="hero.cta" data-i18n-aria-key="hero.ctaAria" aria-label="Reserve my spot">Reserve my spot</a>
     </div>
-    <div class="hero-queue" aria-label="Reader queue">
+    <div class="hero-queue" data-i18n-aria-key="hero.queueAria" aria-label="Reader queue">
       <div class="hero-queue-avatars" aria-hidden="true">
         <span class="hero-queue-dot q1">A</span>
         <span class="hero-queue-dot q2">M</span>
@@ -3415,12 +3523,12 @@
         <span class="hero-queue-dot q4">R</span>
         <span class="hero-queue-dot q5">+41</span>
       </div>
-      <p class="hero-queue-text">
+      <p class="hero-queue-text" data-i18n="hero.queue">
         <strong>45</strong> readers in the queue <span class="hero-queue-sep">·</span> <span class="hero-queue-seats">55 seats left</span>
       </p>
     </div>
   </div>
-  <a class="scroll-hint" href="#functions" aria-label="Scroll to next section">Turn the page</a>
+  <a class="scroll-hint" href="#functions" data-i18n="hero.scroll" data-i18n-aria-key="hero.scrollAria" aria-label="Scroll to next section">Turn the page</a>
 </section>
 
 
@@ -3433,23 +3541,23 @@
     <header class="functions-header reveal">
       <p class="functions-eyebrow">
         <img class="functions-eyebrow-owl" src="avatars/owl_avatar_default_64.png" alt="" width="64" height="64" decoding="async" aria-hidden="true">
-        How the Owl works
+        <span data-i18n="functions.eyebrow">How the Owl works</span>
       </p>
-      <h2 class="functions-title" id="functions-title">Try it. Get <em>Smarter.</em></h2>
-      <p class="functions-sub">Tap a question. Return a book.<br>The first letter is on us — the rest arrive in your inbox.</p>
+      <h2 class="functions-title" id="functions-title" data-i18n="functions.title">Try it. Get <em>Smarter.</em></h2>
+      <p class="functions-sub" data-i18n="functions.sub">Tap a question. Return a book.<br>The first letter is on us — the rest arrive in your inbox.</p>
     </header>
 
-    <nav class="tabs-nav" role="tablist" aria-label="Owlpo functions">
-      <button class="tab-btn" role="tab" aria-selected="true" data-tab="discover" id="tab-discover" aria-controls="panel-discover" type="button">
+    <nav class="tabs-nav" role="tablist" aria-label="Owlpo functions" data-i18n-aria-key="functions.tablistAria">
+      <button class="tab-btn" role="tab" aria-selected="true" data-tab="discover" id="tab-discover" aria-controls="panel-discover" type="button" data-i18n="tab.discover">
         Discover Books
       </button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="ask" id="tab-ask" aria-controls="panel-ask" type="button">
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="ask" id="tab-ask" aria-controls="panel-ask" type="button" data-i18n="tab.ask">
         Ask Anything
       </button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="skip" id="tab-skip" aria-controls="panel-skip" type="button">
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="skip" id="tab-skip" aria-controls="panel-skip" type="button" data-i18n="tab.skip">
         Skip Pages
       </button>
-      <button class="tab-btn" role="tab" aria-selected="false" data-tab="sharper" id="tab-sharper" aria-controls="panel-sharper" type="button">
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="sharper" id="tab-sharper" aria-controls="panel-sharper" type="button" data-i18n="tab.sharper">
         Become Sharper
       </button>
     </nav>
@@ -3459,30 +3567,30 @@
       <!-- TAB 1 — DISCOVER BOOKS -->
       <div class="tab-panel active" role="tabpanel" id="panel-discover" data-panel="discover" aria-labelledby="tab-discover">
         <div class="explainer reveal">
-          <h3>Discover books based on <em>mood &amp; scenario</em>.</h3>
-          <p>Bedtime? Fresh morning? Sunny afternoon at the park? Just ask the Owl. We read your mood, the weather, your calendar — and find the book made for <span class="accent">this exact moment</span>.</p>
-          <p class="try-it-arrow">Try it <span class="arrow">→</span></p>
+          <h3 data-i18n="discover.h3">Discover books based on <em>mood &amp; scenario</em>.</h3>
+          <p data-i18n="discover.p1">Bedtime? Fresh morning? Sunny afternoon at the park? Just ask the Owl. We read your mood, the weather, your calendar — and find the book made for <span class="accent">this exact moment</span>.</p>
+          <p class="try-it-arrow" data-i18n="discover.try">Try it <span class="arrow">→</span></p>
         </div>
 
         <div class="demo reveal" data-demo="discover">
           <div class="demo-topbar">
             <div class="demo-topbar-left">
               <div class="owl-mini owl-mini--img" aria-hidden="true"><img class="owl-img" src="avatars/owl_avatar_small_64.png" alt="" width="64" height="64" decoding="async"></div>
-              <span>The Owl's Postoffice</span>
+              <span data-i18n="demo.brand">The Owl's Postoffice</span>
             </div>
-            <div class="demo-topbar-right"><span class="live-dot"></span>Live demo</div>
+            <div class="demo-topbar-right"><span class="live-dot"></span><span data-i18n="demo.live">Live demo</span></div>
           </div>
 
           <div class="demo-body" data-demo-body>
             <div class="owl-prompt">
               <div class="owl-avatar" aria-hidden="true"><img class="owl-img" src="avatars/owl_avatar_default_64.png" alt="" width="64" height="64" decoding="async"></div>
-              <div class="owl-bubble">Tell me where you are right now <span class="sparkle">✦</span> — I'll find the book made for this moment.</div>
+              <div class="owl-bubble" data-i18n="discover.bubble">Tell me where you are right now <span class="sparkle">✦</span> — I'll find the book made for this moment.</div>
             </div>
 
             <div class="chips-container" data-chips>
-              <button class="chip" type="button" data-response="discover-1"><span class="chip-icon">🌙</span>Tonight, before bed</button>
-              <button class="chip" type="button" data-response="discover-2"><span class="chip-icon">☀</span>Fresh morning, ready to start</button>
-              <button class="chip" type="button" data-response="discover-3"><span class="chip-icon">🍃</span>A slow Sunday afternoon</button>
+              <button class="chip" type="button" data-response="discover-1" data-i18n="chip.d1"><span class="chip-icon">🌙</span>Tonight, before bed</button>
+              <button class="chip" type="button" data-response="discover-2" data-i18n="chip.d2"><span class="chip-icon">☀</span>Fresh morning, ready to start</button>
+              <button class="chip" type="button" data-response="discover-3" data-i18n="chip.d3"><span class="chip-icon">🍃</span>A slow Sunday afternoon</button>
             </div>
           </div>
         </div>
@@ -3491,30 +3599,30 @@
       <!-- TAB 2 — ASK ANYTHING -->
       <div class="tab-panel" role="tabpanel" id="panel-ask" data-panel="ask" aria-labelledby="tab-ask">
         <div class="explainer reveal">
-          <h3>Ask anything. Get a <em>book</em> in return.</h3>
-          <p>Some questions are too important for a generic ChatGPT answer. A career crisis. A breakup. Your wildest dream. For every question that won't let you sleep, an author has already lived it, researched it for decades, and written the book waiting for you. <span class="accent">Skip the AI noise.</span></p>
-          <p class="try-it-arrow">Try it <span class="arrow">→</span></p>
+          <h3 data-i18n="ask.h3">Ask anything. Get a <em>book</em> in return.</h3>
+          <p data-i18n="ask.p1">Some questions are too important for a generic ChatGPT answer. A career crisis. A breakup. Your wildest dream. For every question that won't let you sleep, an author has already lived it, researched it for decades, and written the book waiting for you. <span class="accent">Skip the AI noise.</span></p>
+          <p class="try-it-arrow" data-i18n="ask.try">Try it <span class="arrow">→</span></p>
         </div>
 
         <div class="demo reveal" data-demo="ask">
           <div class="demo-topbar">
             <div class="demo-topbar-left">
               <div class="owl-mini owl-mini--img" aria-hidden="true"><img class="owl-img" src="avatars/owl_avatar_small_64.png" alt="" width="64" height="64" decoding="async"></div>
-              <span>The Owl's Postoffice</span>
+              <span data-i18n="demo.brand">The Owl's Postoffice</span>
             </div>
-            <div class="demo-topbar-right"><span class="live-dot"></span>Live demo</div>
+            <div class="demo-topbar-right"><span class="live-dot"></span><span data-i18n="demo.live">Live demo</span></div>
           </div>
 
           <div class="demo-body" data-demo-body>
             <div class="owl-prompt">
               <div class="owl-avatar" aria-hidden="true"><img class="owl-img" src="avatars/owl_avatar_default_64.png" alt="" width="64" height="64" decoding="async"></div>
-              <div class="owl-bubble">What's the question keeping you up <span class="sparkle">✦</span> — I'll find the book with the answer.</div>
+              <div class="owl-bubble" data-i18n="ask.bubble">What's the question keeping you up <span class="sparkle">✦</span> — I'll find the book with the answer.</div>
             </div>
 
             <div class="chips-container" data-chips>
-              <button class="chip" type="button" data-response="ask-1"><span class="chip-icon">⚡</span>How do I stop overthinking everything?</button>
-              <button class="chip" type="button" data-response="ask-2"><span class="chip-icon">🚪</span>Should I leave a stable job to chase something?</button>
-              <button class="chip" type="button" data-response="ask-3"><span class="chip-icon">💔</span>Why do I keep dating the same person?</button>
+              <button class="chip" type="button" data-response="ask-1" data-i18n="chip.a1"><span class="chip-icon">⚡</span>How do I stop overthinking everything?</button>
+              <button class="chip" type="button" data-response="ask-2" data-i18n="chip.a2"><span class="chip-icon">🚪</span>Should I leave a stable job to chase something?</button>
+              <button class="chip" type="button" data-response="ask-3" data-i18n="chip.a3"><span class="chip-icon">💔</span>Why do I keep dating the same person?</button>
             </div>
           </div>
         </div>
@@ -3523,30 +3631,30 @@
       <!-- TAB 3 — SKIP PAGES -->
       <div class="tab-panel" role="tabpanel" id="panel-skip" data-panel="skip" aria-labelledby="tab-skip">
         <div class="explainer reveal">
-          <h3>Book preview, <em>tailored</em> to your question.</h3>
-          <p>Some books don't deserve 300 pages. Others hide gems in every line. Tell us your question, and we'll hand you the chapters, the insights, the paragraphs <span class="accent">written for you</span> — so you can choose to read deeper, or move on.</p>
-          <p class="try-it-arrow">Try it <span class="arrow">→</span></p>
+          <h3 data-i18n="skip.h3">Book preview, <em>tailored</em> to your question.</h3>
+          <p data-i18n="skip.p1">Some books don't deserve 300 pages. Others hide gems in every line. Tell us your question, and we'll hand you the chapters, the insights, the paragraphs <span class="accent">written for you</span> — so you can choose to read deeper, or move on.</p>
+          <p class="try-it-arrow" data-i18n="skip.try">Try it <span class="arrow">→</span></p>
         </div>
 
         <div class="demo reveal" data-demo="skip">
           <div class="demo-topbar">
             <div class="demo-topbar-left">
               <div class="owl-mini owl-mini--img" aria-hidden="true"><img class="owl-img" src="avatars/owl_avatar_small_64.png" alt="" width="64" height="64" decoding="async"></div>
-              <span>The Owl's Postoffice</span>
+              <span data-i18n="demo.brand">The Owl's Postoffice</span>
             </div>
-            <div class="demo-topbar-right"><span class="live-dot"></span>Live demo</div>
+            <div class="demo-topbar-right"><span class="live-dot"></span><span data-i18n="demo.live">Live demo</span></div>
           </div>
 
           <div class="demo-body" data-demo-body>
             <div class="owl-prompt">
               <div class="owl-avatar" aria-hidden="true"><img class="owl-img" src="avatars/owl_avatar_default_64.png" alt="" width="64" height="64" decoding="async"></div>
-              <div class="owl-bubble">Pick a book and tell me your angle <span class="sparkle">✦</span> — I'll pull the chapters that matter.</div>
+              <div class="owl-bubble" data-i18n="skip.bubble">Pick a book and tell me your angle <span class="sparkle">✦</span> — I'll pull the chapters that matter.</div>
             </div>
 
             <div class="chips-container" data-chips>
-              <button class="chip" type="button" data-response="skip-1"><span class="chip-icon">📕</span>Atomic Habits — for chronic restarters</button>
-              <button class="chip" type="button" data-response="skip-2"><span class="chip-icon">📗</span>Psychology of Money — for a college student</button>
-              <button class="chip" type="button" data-response="skip-3"><span class="chip-icon">📙</span>Sapiens — for an early-stage founder</button>
+              <button class="chip" type="button" data-response="skip-1" data-i18n="chip.s1"><span class="chip-icon">📕</span>Atomic Habits — for chronic restarters</button>
+              <button class="chip" type="button" data-response="skip-2" data-i18n="chip.s2"><span class="chip-icon">📗</span>Psychology of Money — for a college student</button>
+              <button class="chip" type="button" data-response="skip-3" data-i18n="chip.s3"><span class="chip-icon">📙</span>Sapiens — for an early-stage founder</button>
             </div>
           </div>
         </div>
@@ -3555,21 +3663,21 @@
       <!-- TAB 4 — BECOME SHARPER (nostalgic tracker) -->
       <div class="tab-panel" role="tabpanel" id="panel-sharper" data-panel="sharper" aria-labelledby="tab-sharper">
         <div class="explainer reveal">
-          <h3>Track reading history. Watch yourself <em>grow</em>.</h3>
-          <p>Meet your <span class="accent">Reading Identity</span>. Every book you finish leaves a mark — and for once, you can see it. The wisdom you've collected, the reader you're becoming, finally on the record. Worth showing off.</p>
-          <p class="try-it-arrow">Try it <span class="arrow">→</span></p>
+          <h3 data-i18n="sharper.h3">Track reading history. Watch yourself <em>grow</em>.</h3>
+          <p data-i18n="sharper.p1">Meet your <span class="accent">Reading Identity</span>. Every book you finish leaves a mark — and for once, you can see it. The wisdom you've collected, the reader you're becoming, finally on the record. Worth showing off.</p>
+          <p class="try-it-arrow" data-i18n="sharper.try">Try it <span class="arrow">→</span></p>
         </div>
 
         <article class="tracker-demo reveal" data-demo="tracker">
           <div class="tracker-label-row">
             <span class="tracker-label-main">
               <img class="tracker-owl-mini" src="avatars/owl_avatar_default_64.png" alt="" width="64" height="64" decoding="async" aria-hidden="true">
-              <span>Reading Identity Ledger</span>
+              <span data-i18n="sharper.ledger">Reading Identity Ledger</span>
             </span>
             <span class="seal-tag">tier I</span>
           </div>
 
-          <div class="tier-strip" aria-label="Growth tracker tiers">
+          <div class="tier-strip" data-i18n-aria-key="sharper.tierStripAria" aria-label="Growth tracker tiers">
             <button class="tier-button active" type="button" data-tracker-tier="0" aria-pressed="true">
               <span class="tier-step">Tier I</span>
               <span class="tier-name">Owl Apprentice</span>
@@ -3587,17 +3695,17 @@
           <div class="tracker-topline" aria-live="polite">
             <div>
               <p class="card-kicker">5 books logged</p>
-              <div class="tracker-exp" role="progressbar" aria-label="Tier experience" aria-valuemin="0" aria-valuemax="100" aria-valuenow="32">
+              <div class="tracker-exp" role="progressbar" data-i18n-aria-key="sharper.expAria" aria-label="Tier experience" aria-valuemin="0" aria-valuemax="100" aria-valuenow="32">
                 <span class="tracker-exp-fill"></span>
               </div>
             </div>
             <div class="tracker-number">32%</div>
           </div>
 
-          <div class="radar-wrap" aria-label="Sample reading growth radar chart">
+          <div class="radar-wrap" data-i18n-aria-key="sharper.radarWrapAria" aria-label="Sample reading growth radar chart">
             <svg class="radar-chart" viewBox="0 0 320 300" role="img" aria-labelledby="radar-title radar-desc">
-              <title id="radar-title">Reading growth radar</title>
-              <desc id="radar-desc">Owl Apprentice growth across health, relationship, investing, career, mindset, and literature.</desc>
+              <title id="radar-title" data-i18n="sharper.radarTitle">Reading growth radar</title>
+              <desc id="radar-desc" data-i18n="sharper.radarDesc">Owl Apprentice growth across health, relationship, investing, career, mindset, and literature.</desc>
               <polygon class="radar-ring" points="160,38 257,94 257,206 160,262 63,206 63,94"></polygon>
               <polygon class="radar-ring" points="160,70 229,110 229,190 160,230 91,190 91,110"></polygon>
               <polygon class="radar-ring" points="160,102 202,126 202,174 160,198 118,174 118,126"></polygon>
@@ -3608,12 +3716,12 @@
               <line class="radar-axis" x1="160" y1="150" x2="63" y2="206"></line>
               <line class="radar-axis" x1="160" y1="150" x2="63" y2="94"></line>
               <polygon class="radar-area" points="160,121 201,126 177,160 160,185 94,188 86,107"></polygon>
-              <text class="radar-label" x="160" y="22" text-anchor="middle">Health</text>
-              <text class="radar-label" x="272" y="86" text-anchor="middle">Relationship</text>
-              <text class="radar-label" x="272" y="216" text-anchor="middle">Investing</text>
-              <text class="radar-label" x="160" y="286" text-anchor="middle">Career</text>
-              <text class="radar-label" x="48" y="216" text-anchor="middle">Mindset</text>
-              <text class="radar-label" x="48" y="86" text-anchor="middle">Literature</text>
+              <text class="radar-label" x="160" y="22" text-anchor="middle" data-i18n="radar.h">Health</text>
+              <text class="radar-label" x="272" y="86" text-anchor="middle" data-i18n="radar.r">Relationship</text>
+              <text class="radar-label" x="272" y="216" text-anchor="middle" data-i18n="radar.i">Investing</text>
+              <text class="radar-label" x="160" y="286" text-anchor="middle" data-i18n="radar.c">Career</text>
+              <text class="radar-label" x="48" y="216" text-anchor="middle" data-i18n="radar.m">Mindset</text>
+              <text class="radar-label" x="48" y="86" text-anchor="middle" data-i18n="radar.l">Literature</text>
             </svg>
           </div>
 
@@ -3637,8 +3745,8 @@
      BEAT 0 — INTERMISSION (dark blue title card)
      ====================================================== -->
 <div class="intermission reveal" id="story">
-  <p class="intermission-eyebrow">— Intermission —</p>
-  <h2 class="intermission-line">A short story about why Owlpo had to exist.</h2>
+  <p class="intermission-eyebrow" data-i18n="intermission.eyebrow">— Intermission —</p>
+  <h2 class="intermission-line" data-i18n="intermission.title">A short story about why Owlpo had to exist.</h2>
   <div class="intermission-ornament">✦ ◆ ✦</div>
 </div>
 
@@ -3648,9 +3756,9 @@
      ====================================================== -->
 <section class="story-beat story-beat--center">
   <div class="beat-inner reveal">
-    <p class="beat-eyebrow">Look around</p>
-    <h2 class="beat-title">A Noisy World</h2>
-    <p class="beat-body">We live in the noisiest era in human history. More content, less thinking. More answers, less actual understanding.</p>
+    <p class="beat-eyebrow" data-i18n="beat1.eyebrow">Chapter I</p>
+    <h2 class="beat-title" data-i18n="beat1.title">We live in a noisy world.</h2>
+    <p class="beat-body" data-i18n="beat1.body">The noisiest era in human history.<br>More content, less thinking. More random answer, less actual understanding.</p>
   </div>
 </section>
 
@@ -3660,9 +3768,9 @@
      ====================================================== -->
 <section class="story-beat story-beat--center story-beat--mirror-answer">
   <div class="beat-inner reveal">
-    <p class="beat-eyebrow">The Downgrade</p>
-    <h2 class="beat-title">While AI upgrades, we downgrade.</h2>
-    <p class="beat-body">Feeds that never stop. Scrolls that fry our brains. AI gets smarter every quarter — we get more distracted every day.</p>
+    <p class="beat-eyebrow" data-i18n="beat2.eyebrow">Chapter II</p>
+    <h2 class="beat-title" data-i18n="beat2.title">While AI upgrades, we downgrade.</h2>
+    <p class="beat-body" data-i18n="beat2.body">Feeds that never stop. Scrolls that fry our brains. AI gets smarter every quarter — we get more distracted every day.</p>
   </div>
 </section>
 
@@ -3674,10 +3782,10 @@
   <div class="beat-inner">
 
     <div class="beat-copy reveal">
-      <p class="beat-eyebrow">Reality</p>
-      <h2 class="beat-title">Books are more important than ever before.</h2>
-      <p class="beat-body">In books, you sit with Nietzsche, Aristotle, Austen — and every mind that shaped human thinking. You feel what they felt. You think alongside them. You reflect on your own. Reading is the best format of brain training — and nothing about that is wasted time.</p>
-      <a href="#reserve" class="beat-cta">Reserve my spot — it's free</a>
+      <p class="beat-eyebrow" data-i18n="beat3.eyebrow">Chapter III</p>
+      <h2 class="beat-title" data-i18n="beat3.title">Books are more important than ever before.</h2>
+      <p class="beat-body" data-i18n="beat3.body">In books, you sit with Nietzsche, Aristotle, Austen — and every mind that shaped human thinking. You feel what they felt. You think alongside them. You reflect on your own. Reading is the best format of brain training — and nothing about that is wasted time.</p>
+      <a href="#reserve" class="beat-cta" data-i18n="beat3.cta">Reserve my spot — it's free</a>
     </div>
 
     <div class="beat-art reveal">
@@ -3803,10 +3911,10 @@
   <div class="beat-inner">
 
     <div class="beat-copy reveal">
-      <p class="beat-eyebrow">Problem</p>
-      <h2 class="beat-title">The empty shelf</h2>
-      <p class="beat-body">But the right book is hard to find. Boring to start. Easy to forget. The book that could change your Tuesday is on a shelf you'll never reach.</p>
-      <a href="#reserve" class="beat-cta">Reserve my spot — it's free</a>
+      <p class="beat-eyebrow" data-i18n="beat4.eyebrow">Chapter IV</p>
+      <h2 class="beat-title" data-i18n="beat4.title">The empty shelf</h2>
+      <p class="beat-body" data-i18n="beat4.body">But the right book is hard to find. Boring to start. Easy to forget. The book that could change your Tuesday is on a shelf you'll never reach.</p>
+      <a href="#reserve" class="beat-cta" data-i18n="beat4.cta">Reserve my spot — it's free</a>
     </div>
 
     <div class="beat-art reveal">
@@ -3853,7 +3961,7 @@
             <ellipse cx="280" cy="370" rx="22" ry="20" fill="none" stroke="rgba(80,40,20,0.15)" stroke-width="1.8"/>
             <path d="M 62 60 Q 62 95 95 95" fill="none" stroke="rgba(180,170,150,0.3)" stroke-width="0.5"/>
             <path d="M 62 60 Q 78 78 95 60" fill="none" stroke="rgba(180,170,150,0.2)" stroke-width="0.4"/>
-            <text x="230" y="340" text-anchor="middle" font-family="IM Fell English, serif" font-style="italic" font-size="11" fill="rgba(80,55,28,0.3)">where is the right book?</text>
+            <text x="230" y="340" text-anchor="middle" font-family="IM Fell English, serif" font-style="italic" font-size="11" fill="rgba(80,55,28,0.3)" data-i18n="beat4.svgNote">where is the right book?</text>
           </g>
           <rect x="0" y="0" width="460" height="540" filter="url(#shelf-noise)" opacity="0.5"/>
         </svg>
@@ -3872,10 +3980,10 @@
   <div class="beat-inner">
 
     <div class="beat-copy reveal">
-      <p class="beat-eyebrow">Solution</p>
-      <h2 class="beat-title">Introducing Owlpo:<br>Your <span class="beat-title-wax">private</span> book discovery secretary</h2>
-      <p class="beat-body">Discover books by mood and moment. Preview only what matters to you. Track every book that leaves a mark. Ask anything—Owlpo fetches you a book in return. It's like your private librarian at your fingertips, who really knows you well.</p>
-      <a href="#reserve" class="beat-cta">Reserve my spot — it's free</a>
+      <p class="beat-eyebrow" data-i18n="beat5.eyebrow">Chapter V</p>
+      <h2 class="beat-title" data-i18n="beat5.title">Introducing Owlpo:<br>Your <span class="beat-title-wax">private</span> book discovery secretary</h2>
+      <p class="beat-body" data-i18n="beat5.body">Discover books by mood and moment. Preview only what matters to you. Track every book that leaves a mark. Ask anything—Owlpo fetches you a book in return. It's like your private librarian at your fingertips, who really knows you well.</p>
+      <a href="#reserve" class="beat-cta" data-i18n="beat5.cta">Reserve my spot — it's free</a>
     </div>
 
     <div class="beat-art reveal">
@@ -3945,20 +4053,20 @@
 <section class="story-beat story-beat--closing">
   <div class="beat-inner reveal">
 
-    <p class="beat-eyebrow">A movement</p>
+    <p class="beat-eyebrow" data-i18n="closing.eyebrow">Epilogue — The Movement</p>
 
-    <h2 class="closing-headline">
+    <h2 class="closing-headline" data-i18n="closing.headline">
       I read,<br><em>therefore I am.</em>
     </h2>
 
     <hr class="closing-rule" aria-hidden="true">
 
-    <p class="closing-manifesto">
+    <p class="closing-manifesto" data-i18n="closing.manifesto">
       This isn't an app launch. It's a small return to depth —<br>
       to thinking, to the books that leave a mark across generations of history.
     </p>
 
-    <div class="closing-queue" aria-label="Reader queue">
+    <div class="closing-queue" data-i18n-aria-key="closing.queueAria" aria-label="Reader queue">
       <div class="hero-queue-avatars" aria-hidden="true">
         <span class="hero-queue-dot q1">A</span>
         <span class="hero-queue-dot q2">M</span>
@@ -3966,13 +4074,13 @@
         <span class="hero-queue-dot q4">R</span>
         <span class="hero-queue-dot q5">+41</span>
       </div>
-      <p class="closing-queue-text">
+      <p class="closing-queue-text" data-i18n="closing.queue">
         <strong>45</strong> readers already joined &nbsp;·&nbsp; <span class="closing-seats">55 founding seats left</span>
       </p>
     </div>
 
     <div class="beat-cta-row">
-      <a href="#reserve" class="closing-cta">Become a Founding Member</a>
+      <a href="#reserve" class="closing-cta" data-i18n="closing.cta">Become a Founding Member</a>
     </div>
 
   </div>
@@ -3987,8 +4095,8 @@
     <div class="reserve-mark" aria-hidden="true">
       <img src="avatars/owl_avatar_default_128.png" alt="" width="128" height="128" decoding="async">
     </div>
-    <p class="eyebrow">Reserve a Seat</p>
-    <h2>Join Owlpo</h2>
+    <p class="eyebrow" data-i18n="reserve.eyebrow">Reserve a Seat</p>
+    <h2 data-i18n="reserve.title">Join Owlpo</h2>
   </div>
 
   <div class="tiers">
@@ -3996,59 +4104,59 @@
     <!-- TIER 1 — FREE SEAT -->
     <article class="tier tier-free reveal">
       <div class="tier-head">
-        <h3>Free Seat</h3>
-        <p class="tier-tagline">A place in the queue.</p>
-        <p class="tier-price"><strong>Free</strong>, forever during beta.</p>
+        <h3 data-i18n="tier.free.h3">Free Seat</h3>
+        <p class="tier-tagline" data-i18n="tier.free.tag">A place in the queue.</p>
+        <p class="tier-price" data-i18n="tier.free.price"><strong>Free</strong>, forever during beta.</p>
       </div>
       <div class="tier-divider"></div>
       <ul class="benefits">
-        <li><strong>Your reader number,</strong> <span class="desc">kept on record and watched as it climbs.</span></li>
-        <li><strong>One month of free access</strong> <span class="desc">when the postoffice opens its doors.</span></li>
-        <li><strong>Owl Post sent only when you're ready</strong> <span class="desc">— no spam, no nudges, no marketing noise.</span></li>
-        <li><strong>A private referral link</strong> <span class="desc">to climb the queue with the friends you trust.</span></li>
+        <li data-i18n="tier.free.li1"><strong>Your reader number,</strong> <span class="desc">kept on record and watched as it climbs.</span></li>
+        <li data-i18n="tier.free.li2"><strong>One month of free access</strong> <span class="desc">when the postoffice opens its doors.</span></li>
+        <li data-i18n="tier.free.li3"><strong>Owl Post sent only when you're ready</strong> <span class="desc">— no spam, no nudges, no marketing noise.</span></li>
+        <li data-i18n="tier.free.li4"><strong>A private referral link</strong> <span class="desc">to climb the queue with the friends you trust.</span></li>
       </ul>
-      <p class="tier-meta"><strong>247 readers</strong> in the queue.</p>
+      <p class="tier-meta" data-i18n="tier.free.meta"><strong>247 readers</strong> in the queue.</p>
       <form class="tier-form" data-waitlist-form data-tier="free" novalidate>
         <div class="tier-input-row">
-          <label class="sr-only" for="free-email">Email address</label>
-          <input id="free-email" name="email" type="email" placeholder="your.name@email.com" autocomplete="email" required>
-          <button type="submit">Reserve my seat → it's free</button>
+          <label class="sr-only" for="free-email" data-i18n="tier.emailLabel">Email address</label>
+          <input id="free-email" name="email" type="email" data-i18n-ph="tier.emailPh" placeholder="your.name@email.com" autocomplete="email" required>
+          <button type="submit" data-i18n="tier.free.btn">Reserve my seat → it's free</button>
         </div>
         <div class="tier-invite-row">
-          <label class="sr-only" for="free-invite">Invitation code (optional)</label>
-          <input id="free-invite" name="inviteCode" type="text" data-invite-code inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Invitation code (optional)" maxlength="48">
+          <label class="sr-only" for="free-invite" data-i18n="tier.inviteLabel">Invitation code (optional)</label>
+          <input id="free-invite" name="inviteCode" type="text" data-invite-code inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" data-i18n-ph="tier.invitePh" placeholder="Invitation code (optional)" maxlength="48">
         </div>
-        <div class="tier-status" aria-live="polite">Reader <strong>#248</strong> is the next number on the ledger.</div>
+        <div class="tier-status" aria-live="polite" data-i18n="tier.free.status">Reader <strong>#248</strong> is the next number on the ledger.</div>
       </form>
     </article>
 
     <!-- TIER 2 — FOUNDING SEAT -->
     <article class="tier tier-founding reveal">
-      <span class="tier-badge">143 Left</span>
+      <span class="tier-badge" data-i18n="tier.founding.badge">143 Left</span>
       <div class="tier-head">
-        <h3>Founding Seat</h3>
-        <p class="tier-tagline">A seat at opening night.</p>
-        <p class="tier-price"><strong>$7.97 once</strong> · <strong>$9.90/mo</strong> for life.</p>
+        <h3 data-i18n="tier.founding.h3">Founding Seat</h3>
+        <p class="tier-tagline" data-i18n="tier.founding.tag">A seat at opening night.</p>
+        <p class="tier-price" data-i18n="tier.founding.price"><strong>$7.97 once</strong> · <strong>$9.90/mo</strong> for life.</p>
       </div>
       <div class="tier-divider"></div>
       <ul class="benefits">
-        <li><strong>Opening-night access</strong> <span class="desc">— write to Owlpo before anyone else.</span></li>
-        <li><strong>$9.90/mo locked for life,</strong> <span class="desc">no price hikes, ever, even after launch.</span></li>
-        <li><strong>Founding member badge</strong> <span class="desc">stamped on your Reading Identity.</span></li>
-        <li><strong>A vote on what we build next</strong> <span class="desc">— founding readers shape the postoffice.</span></li>
+        <li data-i18n="tier.founding.li1"><strong>Opening-night access</strong> <span class="desc">— write to Owlpo before anyone else.</span></li>
+        <li data-i18n="tier.founding.li2"><strong>$9.90/mo locked for life,</strong> <span class="desc">no price hikes, ever, even after launch.</span></li>
+        <li data-i18n="tier.founding.li3"><strong>Founding member badge</strong> <span class="desc">stamped on your Reading Identity.</span></li>
+        <li data-i18n="tier.founding.li4"><strong>A vote on what we build next</strong> <span class="desc">— founding readers shape the postoffice.</span></li>
       </ul>
-      <p class="tier-meta"><strong>200 founding seats</strong> · <strong>143 remain.</strong></p>
+      <p class="tier-meta" data-i18n="tier.founding.meta"><strong>200 founding seats</strong> · <strong>143 remain.</strong></p>
       <form class="tier-form" data-waitlist-form data-tier="founding" novalidate>
         <div class="tier-input-row">
-          <label class="sr-only" for="founding-email">Email address</label>
-          <input id="founding-email" name="email" type="email" placeholder="your.name@email.com" autocomplete="email" required>
-          <button type="submit">Become a founding member →</button>
+          <label class="sr-only" for="founding-email" data-i18n="tier.emailLabel">Email address</label>
+          <input id="founding-email" name="email" type="email" data-i18n-ph="tier.emailPh" placeholder="your.name@email.com" autocomplete="email" required>
+          <button type="submit" data-i18n="tier.founding.btn">Become a founding member →</button>
         </div>
         <div class="tier-invite-row">
-          <label class="sr-only" for="founding-invite">Invitation code (optional)</label>
-          <input id="founding-invite" name="inviteCode" type="text" data-invite-code inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Invitation code (optional)" maxlength="48">
+          <label class="sr-only" for="founding-invite" data-i18n="tier.inviteLabel">Invitation code (optional)</label>
+          <input id="founding-invite" name="inviteCode" type="text" data-invite-code inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" data-i18n-ph="tier.invitePh" placeholder="Invitation code (optional)" maxlength="48">
         </div>
-        <div class="tier-status" aria-live="polite">Seat <strong>#58</strong> is the next founding number.</div>
+        <div class="tier-status" aria-live="polite" data-i18n="tier.founding.status">Seat <strong>#58</strong> is the next founding number.</div>
       </form>
     </article>
 
@@ -4062,60 +4170,60 @@
 <section class="faq" id="faq">
   <div class="faq-header reveal">
     <div class="faq-eyebrow-row">
-      <span class="faq-eyebrow">Questions & answers</span>
+      <span class="faq-eyebrow" data-i18n="faq.eyebrow">Questions & answers</span>
       <img class="faq-owl" src="avatars/owl_avatar_small_64.png" alt="" width="64" height="64" decoding="async" aria-hidden="true">
     </div>
-    <h2 class="faq-title">Things people ask<br>before they join.</h2>
+    <h2 class="faq-title" data-i18n="faq.title">Things people ask<br>before they join.</h2>
   </div>
 
   <ul class="faq-list">
 
     <li class="faq-item reveal">
       <details>
-        <summary>What exactly is Owlpo?<span class="faq-icon">+</span></summary>
-        <p class="faq-answer">Owlpo is a book discovery secretary — an app that helps you find the right book for your mood, moment, and ambition. Instead of endless browsing, you describe what you're looking for and Owlpo fetches it. Think of it as a personal librarian who actually knows you.</p>
+        <summary data-i18n="faq.q1">What exactly is Owlpo?<span class="faq-icon">+</span></summary>
+        <p class="faq-answer" data-i18n="faq.a1">Owlpo is a book discovery secretary — an app that helps you find the right book for your mood, moment, and ambition. Instead of endless browsing, you describe what you're looking for and Owlpo fetches it. Think of it as a personal librarian who actually knows you.</p>
       </details>
     </li>
 
     <li class="faq-item reveal">
       <details>
-        <summary>Is the free seat actually free?<span class="faq-icon">+</span></summary>
-        <p class="faq-answer">Yes. The free seat gives you access to Owlpo at launch with no payment required. Ever. You'll get discovery, previews, and a basic reading tracker — no credit card, no trial period, no catch. Founding seats are for those who want to lock in a lifetime rate and shape what we build.</p>
+        <summary data-i18n="faq.q2">Is the free seat actually free?<span class="faq-icon">+</span></summary>
+        <p class="faq-answer" data-i18n="faq.a2">Yes. The free seat gives you access to Owlpo at launch with no payment required. Ever. You'll get discovery, previews, and a basic reading tracker — no credit card, no trial period, no catch. Founding seats are for those who want to lock in a lifetime rate and shape what we build.</p>
       </details>
     </li>
 
     <li class="faq-item reveal">
       <details>
-        <summary>When does Owlpo launch?<span class="faq-icon">+</span></summary>
-        <p class="faq-answer">We're not announcing a date yet — we'd rather get it right than get it out. Readers on the waitlist will be the first to know, and founding seat holders get access before anyone else. Sign up and we'll write to you when the postoffice opens.</p>
+        <summary data-i18n="faq.q3">When does Owlpo launch?<span class="faq-icon">+</span></summary>
+        <p class="faq-answer" data-i18n="faq.a3">We're not announcing a date yet — we'd rather get it right than get it out. Readers on the waitlist will be the first to know, and founding seat holders get access before anyone else. Sign up and we'll write to you when the postoffice opens.</p>
       </details>
     </li>
 
     <li class="faq-item reveal">
       <details>
-        <summary>How is this different from Goodreads or StoryGraph?<span class="faq-icon">+</span></summary>
-        <p class="faq-answer">Those are tracking and rating tools. Owlpo is a discovery tool — the focus is on finding your next book, not cataloguing what you've read. You can ask anything ("something quiet for a Sunday," "a book that will make me think differently about money") and Owlpo gives you a curated answer, not a list of 3,000 results.</p>
+        <summary data-i18n="faq.q4">How is this different from Goodreads or StoryGraph?<span class="faq-icon">+</span></summary>
+        <p class="faq-answer" data-i18n="faq.a4">Those are tracking and rating tools. Owlpo is a discovery tool — the focus is on finding your next book, not cataloguing what you've read. You can ask anything ("something quiet for a Sunday," "a book that will make me think differently about money") and Owlpo gives you a curated answer, not a list of 3,000 results.</p>
       </details>
     </li>
 
     <li class="faq-item reveal">
       <details>
-        <summary>What does a founding seat include?<span class="faq-icon">+</span></summary>
-        <p class="faq-answer">A $7.97 one-time payment locks in $9.90/mo for life — even after we raise prices post-launch. You also get opening-night access before the free tier, a founding member badge on your Reading Identity, and a vote on what we build next. There are only 200 founding seats, and they're going.</p>
+        <summary data-i18n="faq.q5">What does a founding seat include?<span class="faq-icon">+</span></summary>
+        <p class="faq-answer" data-i18n="faq.a5">A $7.97 one-time payment locks in $9.90/mo for life — even after we raise prices post-launch. You also get opening-night access before the free tier, a founding member badge on your Reading Identity, and a vote on what we build next. There are only 200 founding seats, and they're going.</p>
       </details>
     </li>
 
     <li class="faq-item reveal">
       <details>
-        <summary>What happens to my data and my shelf?<span class="faq-icon">+</span></summary>
-        <p class="faq-answer">Your reading is yours. We don't sell your data, train models on your library, or share anything with third parties. Your shelf is private by default. We take the same view of your reading life as a good librarian: discreet, respectful, and entirely in your service.</p>
+        <summary data-i18n="faq.q6">What happens to my data and my shelf?<span class="faq-icon">+</span></summary>
+        <p class="faq-answer" data-i18n="faq.a6">Your reading is yours. We don't sell your data, train models on your library, or share anything with third parties. Your shelf is private by default. We take the same view of your reading life as a good librarian: discreet, respectful, and entirely in your service.</p>
       </details>
     </li>
 
     <li class="faq-item reveal">
       <details>
-        <summary>I'm not a big reader. Is Owlpo for me?<span class="faq-icon">+</span></summary>
-        <p class="faq-answer">Especially yes. Owlpo is built for people who want to read more but don't know where to start — not people who already have a towering pile of books. If you finish one great book because Owlpo put it in your hands, that's a win. The postoffice is for the curious, not just the avid.</p>
+        <summary data-i18n="faq.q7">I'm not a big reader. Is Owlpo for me?<span class="faq-icon">+</span></summary>
+        <p class="faq-answer" data-i18n="faq.a7">Especially yes. Owlpo is built for people who want to read more but don't know where to start — not people who already have a towering pile of books. If you finish one great book because Owlpo put it in your hands, that's a win. The postoffice is for the curious, not just the avid.</p>
       </details>
     </li>
 
@@ -4129,20 +4237,20 @@
 <footer class="footer">
   <div class="footer-top">
     <div>
-      <div class="footer-brand">Owlpo</div>
-      <div class="footer-est">Est. 2025 · The Owl's Postoffice</div>
+      <div class="footer-brand" data-i18n="footer.brand">Owlpo</div>
+      <div class="footer-est" data-i18n="footer.est">Est. 2025 · The Owl's Postoffice</div>
     </div>
     <div>
-      <p class="footer-quote">"A letter arrived. Wax still warm."</p>
+      <p class="footer-quote" data-i18n="footer.quote">"A letter arrived. Wax still warm."</p>
       <div class="footer-ornament">✦ ◆ ✦</div>
     </div>
     <div class="footer-links">
-      <a href="#">Twitter</a>
-      <a href="#">Instagram</a>
-      <a href="mailto:hello@owlpo.example">Email</a>
+      <a href="#" data-i18n="footer.twitter">Twitter</a>
+      <a href="#" data-i18n="footer.insta">Instagram</a>
+      <a href="mailto:hello@owlpo.example" data-i18n="footer.email">Email</a>
     </div>
   </div>
-  <p class="footer-privacy">
+  <p class="footer-privacy" data-i18n="footer.privacy">
     Your reading is yours. We don't sell your address, train on your shelf, or send anything you didn't ask for.
   </p>
 </footer>
@@ -4165,7 +4273,8 @@
     })
     const data = await res.json().catch(() => ({}))
     if (!res.ok) {
-      throw new Error(data.error || 'Something went wrong. Please try again.')
+      const fallback = (typeof OwlpoLang !== 'undefined' && OwlpoLang.messages && OwlpoLang.messages['submit.errGeneric']) || 'Something went wrong. Please try again.';
+      throw new Error(data.error || fallback);
     }
     return data
   }
@@ -4200,7 +4309,7 @@
   // FUNCTIONS DEMO — chat-style flow (4 tabs)
   // ============================================
   (function() {
-    const responses = {
+    const responsesEn = {
       'discover-1': {
         type: 'book',
         label: 'Tonight, before bed',
@@ -4372,6 +4481,26 @@
     function typingHTML() {
       return `<div class="typing">${owlAvatarImg('avatars/owl_avatar_thinking_64.png')}<div class="typing-dots"><span></span><span></span><span></span></div></div>`;
     }
+    function mergeDemoResponse(key) {
+      const en = responsesEn[key];
+      if (!en) return en;
+      const z = window.OWLPO_RESP_ZH && window.OWLPO_RESP_ZH[key];
+      if (!z || typeof OwlpoLang === 'undefined' || OwlpoLang.get() !== 'zh') return en;
+      return {
+        type: en.type,
+        label: z.label || en.label,
+        data: Object.assign({}, en.data, z.data || {}),
+        gate: Object.assign({}, en.gate, z.gate || {})
+      };
+    }
+
+    function gateExtras() {
+      if (typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && OwlpoLang.messages) {
+        return { tag: OwlpoLang.messages['demo.gateTag'], meta: OwlpoLang.messages['demo.gateMeta'] };
+      }
+      return { tag: 'A letter is waiting', meta: 'No spam · One letter, then nothing until you say so' };
+    }
+
     function bookCardHTML(book) {
       const variantClass = book.cover.variant === 'burgundy' ? 'cover-burgundy' : book.cover.variant === 'sage' ? 'cover-sage' : '';
       return `<div class="book-card"><div class="book-cover ${variantClass}"><div class="bc-title">${escapeHtml(book.cover.title)}</div><div><div class="bc-divider"></div><div class="bc-author">${escapeHtml(book.cover.author)}</div></div></div><div class="book-meta"><span class="book-pick-tag">${escapeHtml(book.pickTag)}</span><h4 class="book-title">${escapeHtml(book.title)}</h4><div class="book-author">${escapeHtml(book.author)}<span class="year">· ${escapeHtml(book.year)}</span></div><p class="book-reason">${escapeHtml(book.reason)}</p></div></div>`;
@@ -4380,27 +4509,46 @@
       return `<div class="excerpt-block"><div class="excerpt-label">${escapeHtml(excerpt.location)}</div><div class="excerpt-text excerpt-fade">${escapeHtml(excerpt.text)}</div></div>`;
     }
     function chaptersHTML(data) {
-      return `<div class="book-card"><div class="book-cover"><div class="bc-title">${escapeHtml(data.bookTitle)}</div><div><div class="bc-divider"></div><div class="bc-author">${escapeHtml(data.bookAuthor.toUpperCase())}</div></div></div><div class="book-meta"><span class="book-pick-tag">YOUR PERSONALIZED PREVIEW</span><h4 class="book-title">${escapeHtml(data.bookTitle)}</h4><div class="book-author">${escapeHtml(data.bookAuthor)}</div><p class="book-reason">3 chapters pulled from the book — only the parts that matter for your question.</p></div></div><div class="chapter-list">${data.chapters.map(ch => `<div class="chapter-row ${ch.unlocked ? 'unlocked' : 'locked'}"><div class="chapter-icon">${ch.unlocked ? '✓' : '🔒'}</div><div class="chapter-content"><div class="chapter-num">${escapeHtml(ch.num)}</div><div class="chapter-title">${escapeHtml(ch.title)}</div><div class="chapter-snippet">${escapeHtml(ch.snippet)}</div></div></div>`).join('')}</div>`;
+      const zh = typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && OwlpoLang.messages;
+      const pickTag = zh ? OwlpoLang.messages['demo.chaptersPickTag'] : 'YOUR PERSONALIZED PREVIEW';
+      const blurb = zh ? OwlpoLang.messages['demo.chaptersBlurb'] : '3 chapters pulled from the book — only the parts that matter for your question.';
+      return `<div class="book-card"><div class="book-cover"><div class="bc-title">${escapeHtml(data.bookTitle)}</div><div><div class="bc-divider"></div><div class="bc-author">${escapeHtml(data.bookAuthor.toUpperCase())}</div></div></div><div class="book-meta"><span class="book-pick-tag">${escapeHtml(pickTag)}</span><h4 class="book-title">${escapeHtml(data.bookTitle)}</h4><div class="book-author">${escapeHtml(data.bookAuthor)}</div><p class="book-reason">${escapeHtml(blurb)}</p></div></div><div class="chapter-list">${data.chapters.map(ch => `<div class="chapter-row ${ch.unlocked ? 'unlocked' : 'locked'}"><div class="chapter-icon">${ch.unlocked ? '✓' : '🔒'}</div><div class="chapter-content"><div class="chapter-num">${escapeHtml(ch.num)}</div><div class="chapter-title">${escapeHtml(ch.title)}</div><div class="chapter-snippet">${escapeHtml(ch.snippet)}</div></div></div>`).join('')}</div>`;
     }
     function gateHTML(gate) {
-      return `<form class="gate" data-gate-form><div class="gate-tag">A letter is waiting</div><p class="gate-prompt">${gate.prompt}</p><div class="gate-form-row"><input type="email" class="gate-input" placeholder="your email address" required autocomplete="email"><button type="submit" class="gate-submit">${escapeHtml(gate.cta)} →</button></div><div class="gate-meta">No spam · One letter, then nothing until you say so</div></form>`;
+      const ex = gateExtras();
+      const zh = typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && OwlpoLang.messages;
+      const ph = zh ? OwlpoLang.messages['login.phEmail'] : 'your email address';
+      return `<form class="gate" data-gate-form><div class="gate-tag">${escapeHtml(ex.tag)}</div><p class="gate-prompt">${gate.prompt}</p><div class="gate-form-row"><input type="email" class="gate-input" placeholder="${escapeHtml(ph)}" required autocomplete="email"><button type="submit" class="gate-submit">${escapeHtml(gate.cta)} →</button></div><div class="gate-meta">${escapeHtml(ex.meta)}</div></form>`;
     }
     function successHTML() {
+      const zh = typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && OwlpoLang.messages;
+      if (zh) {
+        return `<div class="success-state"><div class="success-seal">✦</div><h3 class="success-title">${OwlpoLang.messages['demo.successTitle']}</h3><p class="success-msg">${OwlpoLang.messages['demo.successMsg']}</p><button type="button" class="success-restart" data-restart>${OwlpoLang.messages['demo.successRestart']}</button></div>`;
+      }
       return `<div class="success-state"><div class="success-seal">✦</div><h3 class="success-title">Your <em>letter</em> is on its way</h3><p class="success-msg">The Owl is writing now. Your full answer arrives in <strong>about 2 minutes</strong> — check your inbox (and the promotions folder, just in case).</p><button type="button" class="success-restart" data-restart>Try another question →</button></div>`;
     }
 
     // ====== Chip / response flow ======
+    function demoTypingBubble() {
+      if (typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && OwlpoLang.messages) return OwlpoLang.messages['demo.stateTyping'];
+      return 'Reading your moment';
+    }
+    function demoFoundBubble() {
+      if (typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && OwlpoLang.messages) return OwlpoLang.messages['demo.stateFound'];
+      return "Here's what I found for you";
+    }
+
     function handleChipResponse(demoEl, responseKey) {
       const body = demoEl.querySelector('[data-demo-body]');
-      const r = responses[responseKey];
+      const r = mergeDemoResponse(responseKey);
       if (!r) return;
-      body.innerHTML = `<div class="owl-prompt">${owlAvatarImg('avatars/owl_avatar_thinking_64.png')}<div class="owl-bubble">Reading your moment <span class="sparkle">✦</span></div></div><div class="user-message">${escapeHtml(r.label)}</div>${typingHTML()}`;
+      body.innerHTML = `<div class="owl-prompt">${owlAvatarImg('avatars/owl_avatar_thinking_64.png')}<div class="owl-bubble">${escapeHtml(demoTypingBubble())} <span class="sparkle">✦</span></div></div><div class="user-message">${escapeHtml(r.label)}</div>${typingHTML()}`;
       setTimeout(() => {
         let responseContent = '';
         if (r.type === 'book') responseContent = bookCardHTML(r.data);
         else if (r.type === 'book-excerpt') responseContent = bookCardHTML(r.data) + excerptHTML(r.data.excerpt);
         else if (r.type === 'chapters') responseContent = chaptersHTML(r.data);
-        body.innerHTML = `<div class="owl-prompt">${owlAvatarImg('avatars/owl_avatar_speaking_64.png')}<div class="owl-bubble">Here's what I found for you <span class="sparkle">✦</span></div></div><div class="user-message">${escapeHtml(r.label)}</div><div class="response-area">${responseContent}</div>${gateHTML(r.gate)}`;
+        body.innerHTML = `<div class="owl-prompt">${owlAvatarImg('avatars/owl_avatar_speaking_64.png')}<div class="owl-bubble">${escapeHtml(demoFoundBubble())} <span class="sparkle">✦</span></div></div><div class="user-message">${escapeHtml(r.label)}</div><div class="response-area">${responseContent}</div>${gateHTML(r.gate)}`;
         attachGateHandler(demoEl);
       }, 1100);
     }
@@ -4481,11 +4629,15 @@
       if (body) initialStates[demoEl.dataset.demo] = body.innerHTML;
     });
     function resetDemo(demoEl) {
-      const initial = initialStates[demoEl.dataset.demo];
-      if (initial) {
-        demoEl.querySelector('[data-demo-body]').innerHTML = initial;
-        attachInitialHandlers(demoEl);
+      const key = demoEl.dataset.demo;
+      const body = demoEl.querySelector('[data-demo-body]');
+      if (!body) return;
+      if (typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && window.OWLPO_DEMO_INITIAL_ZH && OWLPO_DEMO_INITIAL_ZH[key]) {
+        body.innerHTML = OWLPO_DEMO_INITIAL_ZH[key];
+      } else if (initialStates[key]) {
+        body.innerHTML = initialStates[key];
       }
+      attachInitialHandlers(demoEl);
     }
     function attachInitialHandlers(demoEl) {
       demoEl.querySelectorAll('[data-chips] .chip').forEach(chip => {
@@ -4493,6 +4645,22 @@
       });
     }
     chatDemos.forEach(attachInitialHandlers);
+
+    function refreshChatDemosForLang() {
+      chatDemos.forEach(demoEl => {
+        const body = demoEl.querySelector('[data-demo-body]');
+        const key = demoEl.dataset.demo;
+        if (!body || !['discover', 'ask', 'skip'].includes(key)) return;
+        if (typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && window.OWLPO_DEMO_INITIAL_ZH && OWLPO_DEMO_INITIAL_ZH[key]) {
+          body.innerHTML = OWLPO_DEMO_INITIAL_ZH[key];
+        } else if (initialStates[key]) {
+          body.innerHTML = initialStates[key];
+        }
+        attachInitialHandlers(demoEl);
+      });
+    }
+    window.OwlpoDemoRefreshInits = refreshChatDemosForLang;
+    window.addEventListener('owlpo:lang', refreshChatDemosForLang);
   })();
 
 
@@ -4508,6 +4676,7 @@
 
     const trackerTiers = [
       {
+        step: 'Tier I',
         name: 'Owl Apprentice',
         books: '5 books logged',
         score: '32%',
@@ -4525,6 +4694,7 @@
         }
       },
       {
+        step: 'Tier II',
         name: 'Owl Editor',
         books: '18 books logged',
         score: '61%',
@@ -4542,6 +4712,7 @@
         }
       },
       {
+        step: 'Tier III',
         name: 'Legendary Director',
         books: '42 books logged',
         score: '88%',
@@ -4559,6 +4730,67 @@
         }
       }
     ];
+
+    const trackerTiersZh = [
+      {
+        step: '第一阶',
+        name: '猫头鹰学徒',
+        books: '已记录 5 本书',
+        score: '32%',
+        exp: 32,
+        values: [26, 42, 18, 31, 68, 76],
+        dimensions: ['健康 26%', '关系 42%', '投资 18%', '职业 31%', '心态 68%', '文学 76%'],
+        activeIndex: 5,
+        tierLabel: '第一阶',
+        palette: {
+          '--tracker-accent': '#4a5e3a',
+          '--tracker-accent-strong': '#2f3d26',
+          '--tracker-area': 'rgba(74, 94, 58, 0.34)',
+          '--tracker-stroke': 'rgba(47, 61, 38, 0.82)',
+          '--tracker-label': 'rgba(58, 48, 30, 0.76)'
+        }
+      },
+      {
+        step: '第二阶',
+        name: '猫头鹰编辑',
+        books: '已记录 18 本书',
+        score: '61%',
+        exp: 61,
+        values: [48, 62, 44, 56, 78, 82],
+        dimensions: ['健康 48%', '关系 62%', '投资 44%', '职业 56%', '心态 78%', '文学 82%'],
+        activeIndex: 5,
+        tierLabel: '第二阶',
+        palette: {
+          '--tracker-accent': '#3d5a72',
+          '--tracker-accent-strong': '#22394d',
+          '--tracker-area': 'rgba(61, 90, 114, 0.34)',
+          '--tracker-stroke': 'rgba(34, 57, 77, 0.82)',
+          '--tracker-label': 'rgba(58, 48, 30, 0.78)'
+        }
+      },
+      {
+        step: '第三阶',
+        name: '传奇主理人',
+        books: '已记录 42 本书',
+        score: '88%',
+        exp: 88,
+        values: [78, 82, 76, 84, 92, 88],
+        dimensions: ['健康 78%', '关系 82%', '投资 76%', '职业 84%', '心态 92%', '文学 88%'],
+        activeIndex: 4,
+        tierLabel: '第三阶',
+        palette: {
+          '--tracker-accent': '#a88654',
+          '--tracker-accent-strong': '#604828',
+          '--tracker-area': 'rgba(168, 134, 84, 0.34)',
+          '--tracker-stroke': 'rgba(96, 72, 40, 0.82)',
+          '--tracker-label': 'rgba(58, 48, 30, 0.82)'
+        }
+      }
+    ];
+
+    function trackerTierList() {
+      return (typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh') ? trackerTiersZh : trackerTiers;
+    }
 
     function buildAreaPoints(values) {
       return values.map((v, i) => {
@@ -4589,8 +4821,9 @@
       const resumeDelay = 6800;
 
       function showTier(index, opts = {}) {
-        const idx = ((index % trackerTiers.length) + trackerTiers.length) % trackerTiers.length;
-        const tier = trackerTiers[idx];
+        const list = trackerTierList();
+        const idx = ((index % list.length) + list.length) % list.length;
+        const tier = list[idx];
         activeIndex = idx;
 
         Object.entries(tier.palette).forEach(([k, v]) => demo.style.setProperty(k, v));
@@ -4605,6 +4838,11 @@
           const isActive = i === idx;
           btn.classList.toggle('active', isActive);
           btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+          const t = list[i];
+          const stepEl = btn.querySelector('.tier-step');
+          const nameEl = btn.querySelector('.tier-name');
+          if (stepEl && t.step) stepEl.textContent = t.step;
+          if (nameEl) nameEl.textContent = t.name;
         });
         readerSpans.forEach((span, i) => {
           span.classList.toggle('active', i === tier.activeIndex);
@@ -4629,6 +4867,8 @@
 
       showTier(0);
       startLoop();
+
+      window.addEventListener('owlpo:lang', function () { showTier(activeIndex); });
     }
     initGrowthTracker();
   })();
@@ -4648,13 +4888,15 @@
       event.preventDefault();
       status.classList.remove('success', 'error');
       if (!email.value.trim() || !email.checkValidity()) {
-        status.textContent = 'Please enter a valid email so the dispatch knows where to fly.';
+        const msg = (typeof OwlpoLang !== 'undefined' && OwlpoLang.messages && OwlpoLang.messages['wait.errEmail']) || 'Please enter a valid email so the dispatch knows where to fly.';
+        status.textContent = msg;
         status.classList.add('error');
         email.focus();
         return;
       }
       if (submitBtn) submitBtn.disabled = true;
-      status.textContent = 'Sending…';
+      const sending = (typeof OwlpoLang !== 'undefined' && OwlpoLang.messages && OwlpoLang.messages['wait.sending']) || 'Sending…';
+      status.textContent = sending;
       try {
         const data = await submitLead({
           email: email.value.trim(),
@@ -4663,13 +4905,17 @@
           inviteCode: inviteInput ? inviteInput.value : '',
         });
         const n = data.totalReaders;
+        const zh = typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && OwlpoLang.messages;
         const successMessage = tier === 'founding'
-          ? `Founding seat held for you. The wax will be warm when we open.`
-          : `Reader #${n != null ? String(n) : '—'} — your dispatch is being composed. Owlpo will write when it's time.`;
+          ? (zh ? OwlpoLang.messages['wait.successFounding'] : 'Founding seat held for you. The wax will be warm when we open.')
+          : (zh
+            ? (OwlpoLang.messages['wait.successFreeTpl'] || '').replace('#{n}', n != null ? String(n) : '—')
+            : `Reader #${n != null ? String(n) : '—'} — your dispatch is being composed. Owlpo will write when it's time.`);
         status.innerHTML = successMessage;
         status.classList.add('success');
       } catch (err) {
-        status.textContent = err.message || 'The dispatch could not leave. Try again shortly.';
+        const fb = (typeof OwlpoLang !== 'undefined' && OwlpoLang.messages && OwlpoLang.messages['wait.errSend']) || 'The dispatch could not leave. Try again shortly.';
+        status.textContent = err.message || fb;
         status.classList.add('error');
       } finally {
         if (submitBtn) submitBtn.disabled = false;
@@ -4702,11 +4948,35 @@
     const pwToggleBtn     = document.getElementById('loginPasswordToggle');
     const pwInput         = document.getElementById('loginPassword');
     const eyeIcon         = document.getElementById('loginEyeIcon');
-    const magicLinkBtn    = document.getElementById('loginMagicLink');
     const googleBtn       = document.getElementById('loginGoogleBtn');
     const forgotBtn       = document.getElementById('loginForgot');
+    const loginErrorEl = document.getElementById('loginError');
+    const streakBadge  = document.getElementById('loginStreakBadge');
+    const welcomeTitleEl = document.getElementById('loginWelcomeTitle');
+    const welcomeInsightEl = document.getElementById('loginWelcomeInsight');
+    const step2NoteEl = document.getElementById('loginStep2Note');
 
     if (!overlay) return;
+
+    let lastLoginEmail = null;
+    let lastLoginUser = null;
+
+    const STEP2_TITLE_DEFAULT = 'The right book finds you.';
+    const STEP2_INSIGHT_DEFAULT =
+      'Attention is the rarest kind of courage. Owlpo keeps your shelf honest — one letter, one recommendation, one quiet win at a time.';
+    const STEP2_NOTE_DEFAULT =
+      'Your desk lamp is on. We’ll remember this reader.';
+    const STEP2_QUOTE_FOUNDER =
+      '"The people who are crazy enough to think they can change the world, are the ones who do." - Steve Jobs';
+    const STEP2_NOTE_FOUNDER =
+      'Discover, Preview, Track books - all in one place.';
+
+    // ── Hardcoded user accounts ──────────────────────
+    const USERS = {
+      'polar@owlpo.com': { password: '123123', name: 'polar',  initials: 'PO', seat: 'Founder #0', founder: true },
+      'gmw@owlpo.com':   { password: '123123', name: 'gmw',    initials: 'GM', seat: 'Founder #0', founder: true },
+      'cower@owlpo.com': { password: '123123', name: 'cower',  initials: 'CO', seat: 'Founder #0', founder: true },
+    };
 
     // Eye icons: open = visible, crossed = hidden
     const EYE_OPEN = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
@@ -4716,7 +4986,8 @@
       const s = String(email).trim().toLowerCase();
       let h = 2166136261;
       for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
-      return 'OP-' + ((h >>> 0).toString(16).padStart(8, '0').slice(0, 6)).toUpperCase();
+      const seat = ((h >>> 0) % 499) + 1;
+      return 'Seat #' + String(seat).padStart(3, '0');
     }
 
     function initialsFromEmail(email) {
@@ -4742,10 +5013,51 @@
       if (avatarImg.getAttribute('src') !== nextSrc) avatarImg.src = nextSrc;
     }
 
-    function fillWelcomeIdentity(email) {
-      if (loginUserIdEl) loginUserIdEl.textContent = hashEmailToId(email);
-      if (loginUserIcon) loginUserIcon.textContent = initialsFromEmail(email);
-      if (loginStreakEl) loginStreakEl.textContent  = streakFromEmail(email);
+    function fillWelcomeIdentity(email, user) {
+      if (user) {
+        if (loginUserIdEl) loginUserIdEl.textContent = user.seat;
+        if (loginUserIcon) loginUserIcon.textContent = user.initials;
+        if (loginStreakEl) loginStreakEl.textContent = String(streakFromEmail(email));
+        if (streakBadge) streakBadge.classList.remove('is-founder');
+      } else {
+        if (loginUserIdEl) loginUserIdEl.textContent = hashEmailToId(email);
+        if (loginUserIcon) loginUserIcon.textContent = initialsFromEmail(email);
+        if (loginStreakEl) loginStreakEl.textContent  = streakFromEmail(email);
+        if (streakBadge)  streakBadge.classList.remove('is-founder');
+      }
+    }
+
+    function loginT(key, fallback) {
+      if (typeof OwlpoLang !== 'undefined' && OwlpoLang.t) {
+        const v = OwlpoLang.t(key);
+        if (v) {
+          const tmp = document.createElement('div');
+          tmp.innerHTML = v;
+          return tmp.textContent.trim() || fallback;
+        }
+      }
+      return fallback;
+    }
+
+    function applyStep2WelcomeContent(email, user) {
+      const isFounderTrio = !!(user && user.founder);
+      const zh = typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && OwlpoLang.messages;
+      if (welcomeTitleEl) {
+        welcomeTitleEl.textContent = isFounderTrio
+          ? ((zh ? OwlpoLang.messages['login.founderWelcomePrefix'] : 'Welcome home, ') + user.name)
+          : loginT('login.welcomeTitleDefault', STEP2_TITLE_DEFAULT);
+      }
+      if (welcomeInsightEl) {
+        welcomeInsightEl.textContent = isFounderTrio
+          ? (zh ? OwlpoLang.messages['login.founderQuote'] : STEP2_QUOTE_FOUNDER)
+          : loginT('login.welcomeInsightDefault', STEP2_INSIGHT_DEFAULT);
+        welcomeInsightEl.classList.toggle('login-welcome-insight--prominent', isFounderTrio);
+      }
+      if (step2NoteEl) {
+        step2NoteEl.textContent = isFounderTrio
+          ? (zh ? OwlpoLang.messages['login.founderNote'] : STEP2_NOTE_FOUNDER)
+          : loginT('login.welcomeNoteDefault', STEP2_NOTE_DEFAULT);
+      }
     }
 
     const focusable = () => overlay.querySelectorAll(
@@ -4759,8 +5071,11 @@
       overlay.setAttribute('aria-labelledby', 'loginTitle');
     }
 
-    function showLoginStep2(email) {
-      fillWelcomeIdentity(email);
+    function showLoginStep2(email, user) {
+      lastLoginEmail = email;
+      lastLoginUser = user;
+      fillWelcomeIdentity(email, user);
+      applyStep2WelcomeContent(email, user);
       syncLoginAvatar('welcome');
       if (loginStep1) { loginStep1.setAttribute('hidden', ''); loginStep1.setAttribute('aria-hidden', 'true'); }
       if (loginStep2) {
@@ -4777,6 +5092,7 @@
       overlay.classList.add('open');
       document.body.style.overflow = 'hidden';
       if (form) form.reset();
+      if (loginErrorEl) loginErrorEl.setAttribute('hidden', '');
       resetPasswordToggle();
       showLoginStep1();
       setTimeout(() => { const f = focusable()[0]; if (f) f.focus(); }, 60);
@@ -4795,7 +5111,11 @@
       if (!pwInput) return;
       pwInput.type = 'password';
       if (eyeIcon) eyeIcon.innerHTML = EYE_OPEN;
-      if (pwToggleBtn) pwToggleBtn.setAttribute('aria-label', 'Show password');
+      if (pwToggleBtn) {
+        const show = (typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && OwlpoLang.messages)
+          ? OwlpoLang.messages['login.showPwAria'] : 'Show password';
+        pwToggleBtn.setAttribute('aria-label', show);
+      }
     }
 
     // Show / hide password toggle
@@ -4804,27 +5124,24 @@
         const isHidden = pwInput.type === 'password';
         pwInput.type = isHidden ? 'text' : 'password';
         eyeIcon.innerHTML = isHidden ? EYE_SHUT : EYE_OPEN;
-        pwToggleBtn.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
+        const zh = typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && OwlpoLang.messages;
+        const hideLab = zh ? OwlpoLang.messages['login.hidePwAria'] : 'Hide password';
+        const showLab = zh ? OwlpoLang.messages['login.showPwAria'] : 'Show password';
+        pwToggleBtn.setAttribute('aria-label', isHidden ? hideLab : showLab);
         pwInput.focus();
       });
     }
 
     // Google — placeholder (wire up real OAuth later)
+    const loginGoogleLabel = document.getElementById('loginGoogleLabel');
     googleBtn && googleBtn.addEventListener('click', () => {
-      googleBtn.textContent = 'Redirecting to Google\u2026';
+      const zh = typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && OwlpoLang.messages;
+      if (loginGoogleLabel) loginGoogleLabel.textContent = zh ? OwlpoLang.messages['login.redirectGoogle'] : 'Redirecting to Google\u2026';
       googleBtn.disabled = true;
-      setTimeout(() => { googleBtn.textContent = 'Continue with Google'; googleBtn.disabled = false; }, 2000);
-    });
-
-    // Magic link — placeholder
-    magicLinkBtn && magicLinkBtn.addEventListener('click', e => {
-      e.preventDefault();
-      const emailEl = document.getElementById('loginEmail');
-      const email = emailEl && emailEl.value.trim();
-      if (!email) { if (emailEl) { emailEl.focus(); emailEl.style.borderColor = 'var(--wax)'; setTimeout(() => { emailEl.style.borderColor = ''; }, 1200); } return; }
-      magicLinkBtn.textContent = 'Link sent \u2014 check your inbox';
-      magicLinkBtn.style.pointerEvents = 'none';
-      setTimeout(() => { magicLinkBtn.textContent = 'Send me a sign-in link instead'; magicLinkBtn.style.pointerEvents = ''; }, 4000);
+      setTimeout(() => {
+        if (loginGoogleLabel) loginGoogleLabel.textContent = zh ? OwlpoLang.messages['login.google'] : 'Continue with Google';
+        googleBtn.disabled = false;
+      }, 2000);
     });
 
     forgotBtn && forgotBtn.addEventListener('click', e => { e.preventDefault(); });
@@ -4848,9 +5165,17 @@
       }
     });
 
+    function showError(msg) {
+      if (!loginErrorEl) return;
+      loginErrorEl.textContent = msg;
+      loginErrorEl.removeAttribute('hidden');
+      setTimeout(() => { if (loginErrorEl) loginErrorEl.setAttribute('hidden', ''); }, 3500);
+    }
+
     form && form.addEventListener('submit', e => {
       e.preventDefault();
-      const emailEl = form.querySelector('#loginEmail');
+      if (loginErrorEl) loginErrorEl.setAttribute('hidden', '');
+      const emailEl    = form.querySelector('#loginEmail');
       const passwordEl = form.querySelector('#loginPassword');
       if (!emailEl || !emailEl.value.trim() || !emailEl.validity.valid) {
         if (emailEl) { emailEl.focus(); emailEl.style.borderColor = 'var(--wax)'; setTimeout(() => { emailEl.style.borderColor = ''; }, 1200); }
@@ -4860,7 +5185,18 @@
         if (passwordEl) { passwordEl.focus(); passwordEl.style.borderColor = 'var(--wax)'; setTimeout(() => { passwordEl.style.borderColor = ''; }, 1200); }
         return;
       }
-      showLoginStep2(emailEl.value.trim());
+      const email    = emailEl.value.trim().toLowerCase();
+      const password = passwordEl.value;
+      const user     = USERS[email] || null;
+      if (user && user.password !== password) {
+        showError((typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && OwlpoLang.messages)
+          ? OwlpoLang.messages['login.errWrongPw'] : 'Incorrect password.');
+        passwordEl.focus();
+        passwordEl.style.borderColor = 'var(--wax)';
+        setTimeout(() => { passwordEl.style.borderColor = ''; }, 1400);
+        return;
+      }
+      showLoginStep2(email, user);
       setTimeout(() => { if (welcomeBtn) welcomeBtn.focus(); }, 80);
     });
 
@@ -4872,6 +5208,17 @@
 
     toReserve  && toReserve.addEventListener('click',  closeModal);
     inviteCode && inviteCode.addEventListener('click', closeModal);
+
+    window.addEventListener('owlpo:lang', () => {
+      if (loginGoogleLabel) {
+        const zh = typeof OwlpoLang !== 'undefined' && OwlpoLang.get() === 'zh' && OwlpoLang.messages;
+        loginGoogleLabel.textContent = zh ? OwlpoLang.messages['login.google'] : 'Continue with Google';
+      }
+      resetPasswordToggle();
+      if (loginStep2 && !loginStep2.hasAttribute('hidden') && lastLoginEmail != null) {
+        applyStep2WelcomeContent(lastLoginEmail, lastLoginUser);
+      }
+    });
   });
 
   // ============================================
@@ -4894,7 +5241,7 @@
 <div class="login-overlay" id="loginModal" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
 
   <div class="login-card">
-    <button class="login-close" id="loginClose" aria-label="Close login">&times;</button>
+    <button class="login-close" id="loginClose" data-i18n-aria-key="login.closeAria" aria-label="Close login">&times;</button>
 
     <!-- Shared owl — JS swaps default vs speaking -->
     <div id="loginCardAvatarRail" class="login-card-avatar" aria-hidden="true">
@@ -4903,9 +5250,9 @@
 
     <!-- Step 1 — sign in -->
     <div class="login-step" id="loginStep1" data-login-step="1">
-      <span class="login-eyebrow">The Owl's Postoffice</span>
-      <h2 class="login-title" id="loginTitle">Welcome back.</h2>
-      <p class="login-sub"><em>I read, therefore I am.</em></p>
+      <span class="login-eyebrow" data-i18n="login.eyebrow">The Owl's Postoffice</span>
+      <h2 class="login-title" id="loginTitle" data-i18n="login.title">Welcome back.</h2>
+      <p class="login-sub" data-i18n="login.sub"><em>I read, therefore I am.</em></p>
 
       <!-- Google sign-in -->
       <button type="button" class="login-google" id="loginGoogleBtn">
@@ -4915,18 +5262,20 @@
           <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
           <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
         </svg>
-        Continue with Google
+        <span data-i18n="login.google" id="loginGoogleLabel">Continue with Google</span>
       </button>
 
-      <div class="login-rule" aria-hidden="true"><span>or sign in with email</span></div>
+      <div class="login-rule" aria-hidden="true"></div>
 
       <form class="login-form" id="loginForm" novalidate>
+
         <div class="login-field">
-          <label for="loginEmail">Email address</label>
+          <label for="loginEmail" data-i18n="login.labelEmail">Email address</label>
           <input
             type="email"
             id="loginEmail"
             name="email"
+            data-i18n-ph="login.phEmail"
             placeholder="your.name@email.com"
             autocomplete="email"
             required
@@ -4934,8 +5283,8 @@
         </div>
         <div class="login-field">
           <div class="login-field-header">
-            <label for="loginPassword">Password</label>
-            <a href="#forgot" class="login-field-action" id="loginForgot">Forgot password?</a>
+            <label for="loginPassword" data-i18n="login.labelPw">Password</label>
+            <a href="#forgot" class="login-field-action" id="loginForgot" data-i18n="login.forgot">Forgot password?</a>
           </div>
           <div class="login-field-wrap">
             <input
@@ -4947,7 +5296,7 @@
               class="has-toggle"
               required
             >
-            <button type="button" class="login-password-toggle" id="loginPasswordToggle" aria-label="Show password">
+            <button type="button" class="login-password-toggle" id="loginPasswordToggle" data-i18n-aria-key="login.showPwAria" aria-label="Show password">
               <svg id="loginEyeIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                 <circle cx="12" cy="12" r="3"/>
@@ -4958,16 +5307,16 @@
         <div class="login-form-bottom">
           <label class="login-remember">
             <input type="checkbox" id="loginRemember" name="remember">
-            <span class="login-remember-label">Remember me</span>
+            <span class="login-remember-label" data-i18n="login.remember">Remember me</span>
           </label>
         </div>
-        <button type="submit" class="login-submit">Enter the Postoffice →</button>
+        <p class="login-form-error" id="loginError" role="alert" aria-live="polite" hidden data-i18n="login.errDefault">Incorrect email or password.</p>
+        <button type="submit" class="login-submit" data-i18n="login.submit">Enter the Postoffice →</button>
       </form>
 
       <div class="login-footer">
-        <p>No account yet? <a href="#reserve" id="loginToReserve">Reserve your spot →</a></p>
-        <p><a href="#magic-link" id="loginMagicLink">Send me a sign-in link instead</a></p>
-        <p class="login-invite-hint">Private invitation code? <a href="#invite-code" id="loginInviteCode">Enter it here</a></p>
+        <p data-i18n="login.footer1">No account yet? <a href="#reserve" id="loginToReserve">Reserve your spot →</a></p>
+        <p data-i18n="login.footer2">Private invitation code? <a href="#invite-code" id="loginInviteCode">Enter it here</a></p>
       </div>
     </div>
 
@@ -4976,24 +5325,25 @@
       <div class="login-welcome-identity">
         <span class="login-user-icon" id="loginUserIcon" aria-hidden="true">··</span>
         <div class="login-user-meta">
-          <span class="login-user-label">Your reader ID</span>
-          <span class="login-user-id" id="loginUserId">OP-······</span>
+          <span class="login-user-label" id="loginSeatLabel" data-i18n="login.seatLabel">Your seat number</span>
+          <span class="login-user-id" id="loginUserId">Seat #···</span>
         </div>
         <div class="login-streak-badge" id="loginStreakBadge">
           <span class="login-streak-count" id="loginStreakCount">—</span>
-          <span class="login-streak-label">day streak</span>
+          <span class="login-streak-label" id="loginStreakLabel" data-i18n="login.streakLabel">day streak</span>
         </div>
       </div>
-      <p class="login-step2-eyebrow">Signed in</p>
-      <h2 class="login-step2-title" id="loginWelcomeTitle">The right book finds you.</h2>
-      <p class="login-welcome-insight">Attention is the rarest kind of courage. Owlpo keeps your shelf honest — one letter, one recommendation, one quiet win at a time.</p>
+      <p class="login-step2-eyebrow" data-i18n="login.signedEyebrow">Signed in</p>
+      <h2 class="login-step2-title" id="loginWelcomeTitle" data-i18n="login.welcomeTitleDefault">The right book finds you.</h2>
+      <p class="login-welcome-insight" id="loginWelcomeInsight" data-i18n="login.welcomeInsightDefault">Attention is the rarest kind of courage. Owlpo keeps your shelf honest — one letter, one recommendation, one quiet win at a time.</p>
 
-      <button type="button" class="login-step2-cta" id="loginWelcomeContinue">Enter the Postoffice →</button>
-      <p class="login-step2-note">Your desk lamp is on. We’ll remember this reader.</p>
+      <button type="button" class="login-step2-cta" id="loginWelcomeContinue" data-i18n="login.welcomeCta">Enter the Postoffice →</button>
+      <p class="login-step2-note" id="loginStep2Note" data-i18n="login.welcomeNoteDefault">Your desk lamp is on. We’ll remember this reader.</p>
     </div>
   </div>
 
 </div>
 
+<script src="owlpo-lang.js"></script>
 </body>
 </html>
