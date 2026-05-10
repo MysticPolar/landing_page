@@ -1,0 +1,3532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owlpo — The Owl's Postoffice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+DW+Pica:ital@0;1&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --ink: #1c1812;
+    --ink-soft: #3a3228;
+    --parchment: #f3ead4;
+    --parchment-deep: #e8dcbe;
+    --parchment-shadow: #d4c5a0;
+    --cream: #faf4e4;
+    --earth: #8b6a3d;
+    --earth-deep: #604828;
+    --moss: #4a5e3a;
+    --moss-deep: #2f3d26;
+    --sky: #6b8fa8;
+    --sky-deep: #3d5a72;
+    --wax: #6b2c20;
+    --wax-glow: #8b3a2a;
+    --gold: #a88654;
+    --gold-bright: #d8bb76;
+    --navy: #1e2d4a;
+    --sage: #5d6e5a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Crimson Pro', Georgia, serif;
+    background: var(--parchment);
+    color: var(--ink);
+    overflow-x: hidden;
+    font-size: 18px;
+    line-height: 1.7;
+  }
+
+  /* Paper grain overlay — global */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='2'/><feColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.05 0 0 0 0.5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9998;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(40, 28, 15, 0.25) 100%);
+  }
+
+  .display {
+    font-family: 'IM Fell English', 'Cormorant Garamond', Georgia, serif;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+
+  .italic-accent {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+  }
+
+  .eyebrow {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--earth);
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .eyebrow::before,
+  .eyebrow::after {
+    content: '';
+    width: 2rem;
+    height: 1px;
+    background: var(--earth);
+    opacity: 0.5;
+  }
+
+  /* NAV */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    mix-blend-mode: difference;
+    color: #fff;
+  }
+  .nav-brand {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.3rem;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .nav-brand .mark { color: var(--gold); font-size: 1.1rem; }
+  .nav-brand small {
+    font-style: italic;
+    font-size: 0.78rem;
+    letter-spacing: 0.18em;
+    opacity: 0.7;
+    margin-left: 0.4rem;
+  }
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+  }
+  .nav-links a {
+    color: inherit;
+    text-decoration: none;
+    opacity: 0.85;
+    transition: opacity 0.3s;
+  }
+  .nav-links a:hover { opacity: 1; }
+
+  /* ======================================================
+     SECTION 1 — HERO (full-screen old-movie title card)
+     ====================================================== */
+
+  .hero-section {
+    position: relative;
+  }
+
+  .hero-zone {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #fff;
+    padding: 6rem 2rem 8rem;
+    background:
+      radial-gradient(circle at 50% 40%, rgba(75, 60, 38, 0.35) 0%, transparent 60%),
+      linear-gradient(160deg, #1a140d 0%, #2c2418 45%, #1f1812 100%);
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: -5%;
+    background-image: url('hero-bg.png');
+    background-size: cover;
+    background-position: center 40%;
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at center 38%, rgba(255, 248, 230, 0.04) 0%, transparent 55%),
+      linear-gradient(to bottom, rgba(40, 30, 15, 0.04) 0%, transparent 22%, transparent 78%, rgba(20, 15, 10, 0.32) 100%);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 3;
+    max-width: 880px;
+  }
+
+  .hero-title {
+    font-family: 'IM Fell English', serif;
+    font-size: clamp(3.2rem, 7.5vw, 6.4rem);
+    line-height: 1.02;
+    font-weight: 400;
+    color: var(--ink);
+    text-shadow: 0 2px 24px rgba(255, 248, 230, 0.5), 0 1px 2px rgba(255, 248, 230, 0.4);
+    margin-bottom: 2.4rem;
+    opacity: 0;
+    animation: fadeUp 2s 0.4s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+    max-width: 20ch;
+    margin-left: auto;
+    margin-right: auto;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-subtitle {
+    font-family: 'Crimson Pro', serif;
+    font-weight: 400;
+    font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+    color: var(--ink-soft);
+    text-shadow: 0 1px 12px rgba(255, 248, 230, 0.5);
+    max-width: 560px;
+    margin: 0 auto 3.6rem;
+    line-height: 1.55;
+    opacity: 0;
+    animation: fadeUp 2s 0.9s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  }
+
+  .hero-cta-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+    opacity: 0;
+    animation: fadeUp 2s 1.4s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+  }
+
+  /* ======================================================
+     SECTION 2 — FUNCTIONS (chat-style demo, standalone)
+     ====================================================== */
+  .functions-section {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(4rem, 7vw, 6.5rem) clamp(1rem, 4vw, 3rem) clamp(4.5rem, 7vw, 6.5rem);
+    background:
+      radial-gradient(ellipse at 18% 12%, rgba(168, 134, 84, 0.08) 0%, transparent 32rem),
+      radial-gradient(ellipse at 88% 80%, rgba(107, 44, 32, 0.06) 0%, transparent 30rem),
+      linear-gradient(180deg, var(--parchment) 0%, var(--parchment-deep) 100%);
+  }
+  .functions-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.32;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 600 600' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' seed='3'/><feColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.42 0 0 0 0 0.24 0 0 0 0.4 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  .functions-section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(60, 40, 18, 0.1) 100%);
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.95rem 2.1rem;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.92rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--cream);
+    background: var(--ink);
+    border: 1px solid rgba(255, 252, 240, 0.22);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 252, 240, 0.08),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.4),
+      0 14px 36px rgba(0, 0, 0, 0.45);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    background: #2a221a;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 252, 240, 0.1),
+      0 18px 44px rgba(0, 0, 0, 0.5);
+    letter-spacing: 0.18em;
+  }
+
+  .btn-primary .arr {
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+  .btn-primary:hover .arr {
+    transform: translateX(4px);
+  }
+
+  .hero-social-proof {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    text-shadow: 0 1px 8px rgba(255, 248, 230, 0.4);
+  }
+  .hero-social-proof strong {
+    color: var(--earth-deep);
+    font-weight: 400;
+    font-style: normal;
+    letter-spacing: 0.05em;
+  }
+
+  .functions-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  /* ============ Section header ============ */
+  .functions-header {
+    text-align: center;
+    margin-bottom: clamp(2.5rem, 4.5vw, 3.5rem);
+    position: relative;
+  }
+  .functions-eyebrow {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.82rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--earth);
+    margin: 0 0 1rem;
+    opacity: 0.9;
+  }
+  .functions-title {
+    font-family: 'IM Fell English', serif;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 4.8vw, 3.4rem);
+    line-height: 1.05;
+    margin: 0 0 1rem;
+    color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  .functions-title em {
+    font-style: italic;
+    color: var(--wax);
+  }
+  .functions-sub {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(1rem, 1.5vw, 1.18rem);
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: 540px;
+    margin: 0 auto;
+  }
+
+  /* ============ Connected pill tabs ============ */
+  .tabs-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0.3rem;
+    flex-wrap: wrap;
+    margin: 0 auto clamp(2.2rem, 3.8vw, 3rem);
+    max-width: 980px;
+    padding: 0.4rem;
+    background:
+      linear-gradient(180deg, rgba(250, 244, 228, 0.6), rgba(232, 218, 184, 0.55));
+    border: 1px solid rgba(85, 65, 34, 0.28);
+    border-radius: 999px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 252, 240, 0.7),
+      inset 0 -1px 0 rgba(85, 65, 34, 0.08),
+      0 4px 16px rgba(60, 40, 18, 0.06);
+    position: relative;
+  }
+  .tabs-nav::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0.18;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.34 0 0 0 0 0.18 0 0 0 0.5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+  .tab-btn {
+    flex: 1;
+    min-width: 0;
+    appearance: none;
+    border: 0;
+    background: transparent;
+    padding: 0.95rem 1.25rem;
+    font-family: 'IM Fell English', serif;
+    font-size: clamp(0.95rem, 1.35vw, 1.1rem);
+    color: var(--earth-deep);
+    cursor: pointer;
+    border-radius: 999px;
+    transition: all 0.34s cubic-bezier(0.4, 0, 0.2, 1);
+    white-space: nowrap;
+    position: relative;
+    letter-spacing: 0.005em;
+  }
+  .tab-btn:hover {
+    color: var(--ink);
+    background: rgba(255, 252, 240, 0.5);
+  }
+  .tab-btn[aria-selected="true"] {
+    background: var(--ink);
+    color: var(--cream);
+    box-shadow:
+      0 4px 16px rgba(28, 24, 18, 0.28),
+      inset 0 1px 0 rgba(255, 252, 240, 0.08),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.18);
+  }
+  .tab-btn[aria-selected="true"]::before {
+    content: '✦';
+    color: var(--gold-bright);
+    margin-right: 0.55rem;
+    font-size: 0.78em;
+    vertical-align: 0.08em;
+  }
+
+  /* ============ Tab panels (left explainer, right demo) ============ */
+  .tab-panel {
+    display: none;
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: stretch;
+    animation: panelIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .tab-panel.active { display: grid; }
+  @keyframes panelIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============ Explainer (left side) ============ */
+  .explainer {
+    padding: 0.5rem 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .explainer h3 {
+    font-family: 'IM Fell English', serif;
+    font-weight: 400;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    line-height: 1.05;
+    margin: 0 0 1.4rem;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .explainer h3 em {
+    font-style: italic;
+    color: var(--wax);
+  }
+  .explainer p {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(1rem, 1.4vw, 1.12rem);
+    line-height: 1.7;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .explainer p .accent {
+    color: var(--wax);
+    font-style: italic;
+  }
+  .try-it-arrow {
+    margin-top: 1.6rem;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.96rem;
+    color: var(--earth);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    letter-spacing: 0.04em;
+  }
+  .try-it-arrow .arrow {
+    display: inline-block;
+    animation: arrowNudge 2.2s ease-in-out infinite;
+  }
+  @keyframes arrowNudge {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(4px); }
+  }
+
+  /* ============ Demo card — fresh & modern (tabs 1–3) ============ */
+  .demo {
+    position: relative;
+    background: linear-gradient(180deg, #ffffff 0%, #fbf9f3 100%);
+    border: 1px solid rgba(28, 24, 18, 0.08);
+    border-radius: 22px;
+    padding: 1.6rem 1.4rem 1.4rem;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.95),
+      0 32px 64px -28px rgba(28, 24, 18, 0.28),
+      0 8px 22px -8px rgba(28, 24, 18, 0.1),
+      0 1px 2px rgba(28, 24, 18, 0.04);
+    display: flex;
+    flex-direction: column;
+    min-height: 540px;
+    overflow: hidden;
+  }
+  .demo::before {
+    /* subtle top highlight */
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 12%;
+    right: 12%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(168, 134, 84, 0.4), transparent);
+    pointer-events: none;
+  }
+
+  .demo-topbar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0.95rem;
+    margin-bottom: 1.1rem;
+    border-bottom: 1px solid rgba(28, 24, 18, 0.06);
+    z-index: 1;
+  }
+  .demo-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.86rem;
+    color: var(--ink);
+  }
+  .demo-topbar-left .owl-mini {
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, var(--gold-bright), var(--earth));
+    display: grid;
+    place-items: center;
+    color: var(--cream);
+    font-size: 0.95rem;
+    box-shadow: 0 0 0 2px rgba(255, 252, 240, 0.5), 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .demo-topbar-right {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--earth);
+    text-transform: uppercase;
+    opacity: 0.8;
+  }
+  .live-dot {
+    display: inline-block;
+    width: 0.42rem;
+    height: 0.42rem;
+    border-radius: 50%;
+    background: var(--wax-glow);
+    margin-right: 0.4rem;
+    box-shadow: 0 0 0 0 rgba(139, 58, 42, 0.45);
+    animation: livePulse 2s ease-out infinite;
+  }
+  @keyframes livePulse {
+    0% { box-shadow: 0 0 0 0 rgba(139, 58, 42, 0.5); }
+    70% { box-shadow: 0 0 0 0.5rem rgba(139, 58, 42, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(139, 58, 42, 0); }
+  }
+
+  .demo-body {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+  }
+
+  /* ============ Owl prompt bubble ============ */
+  .owl-prompt {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    animation: fadeInUp 0.4s ease both;
+  }
+  .owl-prompt .owl-avatar,
+  .typing .owl-avatar {
+    flex-shrink: 0;
+    width: 2.2rem;
+    height: 2.2rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, var(--gold-bright), var(--earth));
+    display: grid;
+    place-items: center;
+    color: var(--cream);
+    font-size: 1.05rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  }
+  .owl-bubble {
+    background: #f5f1e8;
+    border: 1px solid rgba(28, 24, 18, 0.06);
+    border-radius: 4px 16px 16px 16px;
+    padding: 0.8rem 1.05rem;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.98rem;
+    line-height: 1.5;
+    color: var(--ink);
+    max-width: 90%;
+    box-shadow: 0 1px 2px rgba(28, 24, 18, 0.03);
+  }
+  .owl-bubble .sparkle {
+    color: var(--gold);
+    margin-left: 0.2rem;
+  }
+
+  /* ============ Chip prompts ============ */
+  .chips-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-bottom: 0.8rem;
+  }
+  .chip {
+    appearance: none;
+    border: 1px solid rgba(28, 24, 18, 0.1);
+    background: #ffffff;
+    color: var(--ink);
+    padding: 0.78rem 1.05rem;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.98rem;
+    border-radius: 999px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.22s ease;
+    box-shadow: 0 1px 2px rgba(28, 24, 18, 0.04);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .chip:hover {
+    background: #fbfaf6;
+    border-color: rgba(168, 134, 84, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(28, 24, 18, 0.06);
+  }
+  .chip:active { transform: translateY(0); }
+  .chip:disabled { opacity: 0.35; cursor: not-allowed; }
+  .chip .chip-icon { font-size: 0.95rem; opacity: 0.8; }
+
+  /* ============ User message echo ============ */
+  .user-message {
+    align-self: flex-end;
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.65rem 1rem;
+    border-radius: 14px 4px 14px 14px;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.96rem;
+    margin: 0.3rem 0 0.9rem auto;
+    max-width: 80%;
+    animation: fadeInUp 0.35s ease both;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  /* ============ Typing indicator ============ */
+  .typing {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    animation: fadeInUp 0.3s ease both;
+  }
+  .typing-dots {
+    background: #f5f1e8;
+    border: 1px solid rgba(28, 24, 18, 0.06);
+    border-radius: 4px 16px 16px 16px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    gap: 0.32rem;
+  }
+  .typing-dots span {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background: var(--earth);
+    opacity: 0.4;
+    animation: typingBounce 1.3s ease-in-out infinite;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.18s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.36s; }
+  @keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-4px); opacity: 0.85; }
+  }
+
+  /* ============ Response area ============ */
+  .response-area {
+    display: flex;
+    flex-direction: column;
+    animation: fadeInUp 0.5s ease both;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============ Book card output ============ */
+  .book-card {
+    position: relative;
+    display: flex;
+    gap: 0.95rem;
+    padding: 1rem;
+    background: #ffffff;
+    border: 1px solid rgba(28, 24, 18, 0.08);
+    border-radius: 14px;
+    margin-bottom: 0.85rem;
+    box-shadow: 0 6px 18px rgba(28, 24, 18, 0.06), 0 1px 2px rgba(28, 24, 18, 0.04);
+  }
+  .book-cover {
+    flex-shrink: 0;
+    width: 78px;
+    height: 116px;
+    border-radius: 4px;
+    background: var(--navy);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 0.6rem 0.5rem;
+    color: var(--cream);
+    font-family: 'IM Fell English', serif;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18), inset 0 0 0 1px rgba(255,255,255,0.05);
+    position: relative;
+    overflow: hidden;
+  }
+  .book-cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, transparent 60%, rgba(216, 187, 118, 0.08) 100%),
+      radial-gradient(ellipse at 20% 80%, rgba(216, 187, 118, 0.15), transparent 60%);
+    pointer-events: none;
+  }
+  .book-cover .bc-title {
+    font-size: 0.82rem;
+    line-height: 1.05;
+    z-index: 1;
+    position: relative;
+  }
+  .book-cover .bc-divider {
+    width: 1.2rem;
+    height: 1px;
+    background: var(--gold-bright);
+    margin: 0.4rem 0;
+    z-index: 1;
+    position: relative;
+  }
+  .book-cover .bc-author {
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    z-index: 1;
+    position: relative;
+  }
+  .book-cover.cover-burgundy { background: var(--wax); }
+  .book-cover.cover-burgundy .bc-divider,
+  .book-cover.cover-burgundy .bc-author { color: #f5c889; }
+  .book-cover.cover-sage { background: var(--sage); }
+  .book-cover.cover-sage .bc-divider,
+  .book-cover.cover-sage .bc-author { color: #f5d8a3; }
+
+  .book-meta {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .book-pick-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    align-self: flex-start;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--wax);
+    background: rgba(107, 44, 32, 0.08);
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    margin-bottom: 0.45rem;
+  }
+  .book-pick-tag::before {
+    content: '✦';
+    color: var(--wax);
+    font-size: 0.75rem;
+  }
+  .book-title {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.18rem;
+    line-height: 1.15;
+    color: var(--ink);
+    margin: 0 0 0.25rem;
+  }
+  .book-author {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.88rem;
+    color: var(--earth-deep);
+    margin-bottom: 0.55rem;
+  }
+  .book-author .year {
+    color: var(--earth);
+    margin-left: 0.4rem;
+  }
+  .book-reason {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.96rem;
+    line-height: 1.4;
+    color: var(--sky-deep);
+    border-left: 2px solid var(--gold);
+    padding-left: 0.7rem;
+    margin-top: auto;
+  }
+
+  /* ============ Excerpt teaser ============ */
+  .excerpt-block {
+    margin-top: 0.4rem;
+    padding: 0.85rem 1rem;
+    background: rgba(255, 252, 240, 0.65);
+    border: 1px dashed rgba(85, 65, 34, 0.35);
+    border-radius: 10px;
+    position: relative;
+  }
+  .excerpt-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--earth);
+    margin-bottom: 0.4rem;
+  }
+  .excerpt-text {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.96rem;
+    line-height: 1.55;
+    color: var(--ink);
+    font-style: italic;
+  }
+  .excerpt-text::before {
+    content: '"';
+    font-family: 'IM Fell English', serif;
+    font-size: 1.4rem;
+    color: var(--gold);
+    margin-right: 0.15rem;
+    line-height: 0;
+    vertical-align: -0.2em;
+  }
+  .excerpt-fade {
+    position: relative;
+    max-height: 4.4em;
+    overflow: hidden;
+  }
+  .excerpt-fade::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 2.2em;
+    background: linear-gradient(to bottom, transparent, rgba(255, 252, 240, 0.95));
+    pointer-events: none;
+  }
+
+  /* ============ Chapter list ============ */
+  .chapter-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.4rem;
+  }
+  .chapter-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    padding: 0.7rem 0.85rem;
+    background: rgba(255, 252, 240, 0.7);
+    border: 1px solid rgba(85, 65, 34, 0.18);
+    border-radius: 10px;
+  }
+  .chapter-row.unlocked {
+    border-color: rgba(168, 134, 84, 0.5);
+    background: rgba(255, 252, 240, 0.92);
+  }
+  .chapter-row.locked { opacity: 0.7; }
+  .chapter-icon {
+    flex-shrink: 0;
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 0.78rem;
+  }
+  .chapter-row.unlocked .chapter-icon {
+    background: var(--gold);
+    color: var(--cream);
+  }
+  .chapter-row.locked .chapter-icon {
+    background: rgba(85, 65, 34, 0.18);
+    color: var(--earth);
+  }
+  .chapter-content { flex: 1; min-width: 0; }
+  .chapter-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--earth);
+    margin-bottom: 0.18rem;
+  }
+  .chapter-title {
+    font-family: 'IM Fell English', serif;
+    font-size: 1rem;
+    color: var(--ink);
+    line-height: 1.25;
+    margin-bottom: 0.25rem;
+  }
+  .chapter-snippet {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.86rem;
+    line-height: 1.45;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+  .chapter-row.locked .chapter-title,
+  .chapter-row.locked .chapter-snippet {
+    filter: blur(3px);
+    user-select: none;
+  }
+
+  /* ============ Identity card (Tab 4) ============ */
+  .book-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.6rem;
+    margin-bottom: 0.7rem;
+  }
+  .book-pick {
+    appearance: none;
+    border: 1px solid rgba(85, 65, 34, 0.28);
+    background: rgba(255, 252, 240, 0.7);
+    padding: 0.7rem 0.55rem;
+    border-radius: 10px;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.86rem;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.22s ease;
+    text-align: center;
+    line-height: 1.2;
+    position: relative;
+    min-height: 4.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .book-pick:hover {
+    background: rgba(255, 252, 240, 0.95);
+    border-color: rgba(168, 134, 84, 0.7);
+  }
+  .book-pick.selected {
+    background: var(--ink);
+    color: var(--cream);
+    border-color: var(--ink);
+    transform: scale(0.98);
+  }
+  .book-pick.selected::after {
+    content: '✦';
+    position: absolute;
+    top: 0.35rem;
+    right: 0.45rem;
+    color: var(--gold-bright);
+    font-size: 0.75rem;
+  }
+  .book-pick:disabled { opacity: 0.4; cursor: not-allowed; }
+  .pick-counter {
+    text-align: center;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.86rem;
+    color: var(--earth);
+    margin-top: 0.4rem;
+  }
+
+  .identity-card {
+    background: linear-gradient(135deg, var(--navy) 0%, #14223e 100%);
+    color: var(--cream);
+    padding: 1.4rem 1.3rem;
+    border-radius: 14px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(20, 30, 60, 0.32);
+  }
+  .identity-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(216, 187, 118, 0.15), transparent 50%),
+      radial-gradient(ellipse at 100% 100%, rgba(168, 134, 84, 0.12), transparent 50%);
+    pointer-events: none;
+  }
+  .identity-card::after {
+    content: '✦';
+    position: absolute;
+    top: 1rem;
+    right: 1.2rem;
+    color: var(--gold-bright);
+    font-size: 1.1rem;
+  }
+  .identity-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold-bright);
+    opacity: 0.85;
+    margin-bottom: 0.35rem;
+    position: relative;
+  }
+  .identity-title {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.55rem;
+    color: var(--cream);
+    margin: 0 0 0.95rem;
+    line-height: 1.05;
+    position: relative;
+  }
+  .identity-traits {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 0.95rem;
+    position: relative;
+  }
+  .trait-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.92rem;
+  }
+  .trait-bar-wrap {
+    flex: 1;
+    height: 4px;
+    background: rgba(250, 244, 228, 0.12);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .trait-bar {
+    height: 100%;
+    background: linear-gradient(to right, var(--gold-bright), var(--gold));
+    border-radius: 2px;
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0;
+  }
+  .trait-pct {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--gold-bright);
+    min-width: 2.2rem;
+    text-align: right;
+  }
+  .trait-label {
+    flex-shrink: 0;
+    color: rgba(250, 244, 228, 0.85);
+    min-width: 9rem;
+  }
+  .identity-stat-row {
+    display: flex;
+    gap: 1.4rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgba(216, 187, 118, 0.18);
+    position: relative;
+  }
+  .identity-stat { flex: 1; }
+  .identity-stat-num {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.55rem;
+    color: var(--gold-bright);
+    line-height: 1;
+  }
+  .identity-stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(250, 244, 228, 0.55);
+    margin-top: 0.2rem;
+  }
+  .identity-card.gated .identity-stat-num { filter: blur(8px); }
+
+  /* ============ Email gate ============ */
+  .gate {
+    margin-top: 1rem;
+    padding: 1rem 1.1rem 1.05rem;
+    background: linear-gradient(180deg, #fbf9f3, #f5f1e6);
+    border: 1px solid rgba(28, 24, 18, 0.08);
+    border-radius: 14px;
+    position: relative;
+    animation: gateIn 0.5s 0.35s ease both;
+  }
+  @keyframes gateIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .gate-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.74rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--wax);
+    margin-bottom: 0.45rem;
+  }
+  .gate-tag::before {
+    content: '✉';
+    font-style: normal;
+    font-size: 0.85rem;
+  }
+  .gate-prompt {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.06rem;
+    line-height: 1.3;
+    color: var(--ink);
+    margin: 0 0 0.85rem;
+  }
+  .gate-prompt em {
+    font-style: italic;
+    color: var(--wax);
+  }
+  .gate-form-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+  .gate-input {
+    flex: 1;
+    padding: 0.78rem 1rem;
+    border: 1px solid rgba(28, 24, 18, 0.12);
+    background: #ffffff;
+    border-radius: 10px;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.96rem;
+    color: var(--ink);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .gate-input::placeholder {
+    color: var(--earth);
+    opacity: 0.65;
+  }
+  .gate-input:focus {
+    outline: none;
+    border-color: var(--earth-deep);
+    box-shadow: 0 0 0 3px rgba(168, 134, 84, 0.18);
+  }
+  .gate-submit {
+    appearance: none;
+    border: 0;
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0 1.3rem;
+    border-radius: 10px;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.22s ease;
+    box-shadow: 0 4px 12px rgba(28, 24, 18, 0.2);
+    letter-spacing: 0.02em;
+  }
+  .gate-submit:hover {
+    background: var(--wax);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(107, 44, 32, 0.32);
+  }
+  .gate-meta {
+    margin-top: 0.55rem;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.78rem;
+    color: var(--earth);
+    opacity: 0.85;
+    text-align: center;
+  }
+
+  /* ============ Success state ============ */
+  .success-state {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    animation: fadeInUp 0.5s ease both;
+  }
+  .success-seal {
+    width: 4.6rem;
+    height: 4.6rem;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, var(--wax-glow), var(--wax));
+    display: grid;
+    place-items: center;
+    color: var(--cream);
+    font-family: 'IM Fell English', serif;
+    font-size: 1.6rem;
+    box-shadow: 0 6px 20px rgba(107, 44, 32, 0.32), inset 0 1px 0 rgba(255,255,255,0.15);
+    position: relative;
+    animation: sealStamp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  .success-seal::after {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border: 1px dashed rgba(107, 44, 32, 0.35);
+    border-radius: 50%;
+  }
+  @keyframes sealStamp {
+    0% { opacity: 0; transform: scale(0.5) rotate(-15deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
+  }
+  .success-title {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.42rem;
+    color: var(--ink);
+    margin: 0 0 0.4rem;
+  }
+  .success-title em {
+    font-style: italic;
+    color: var(--wax);
+  }
+  .success-msg {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    margin: 0 auto 1rem;
+    max-width: 28rem;
+  }
+  .success-msg strong {
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .success-restart {
+    appearance: none;
+    border: 1px solid rgba(85, 65, 34, 0.4);
+    background: transparent;
+    color: var(--earth-deep);
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.86rem;
+    cursor: pointer;
+    transition: all 0.22s ease;
+  }
+  .success-restart:hover {
+    background: rgba(255, 252, 240, 0.8);
+    border-color: var(--earth-deep);
+  }
+
+  /* ============ NOSTALGIC TRACKER (Tab 4 — Become Sharper) ============ */
+  .tracker-demo {
+    position: relative;
+    --tracker-accent: #4a5e3a;
+    --tracker-accent-strong: #2f3d26;
+    --tracker-area: rgba(74, 94, 58, 0.34);
+    --tracker-stroke: rgba(47, 61, 38, 0.82);
+    --tracker-label: rgba(58, 48, 30, 0.76);
+    --tracker-exp: 32%;
+    background:
+      linear-gradient(145deg, rgba(248, 240, 221, 0.94), rgba(225, 211, 179, 0.78)),
+      radial-gradient(circle at top right, rgba(111, 148, 168, 0.16), transparent 50%);
+    border: 1px solid rgba(85, 65, 34, 0.22);
+    border-radius: 6px;
+    padding: 1.4rem 1.3rem 1.3rem;
+    overflow: hidden;
+    box-shadow:
+      0 24px 60px -20px rgba(60, 40, 18, 0.32),
+      inset 0 1px 0 rgba(255, 252, 240, 0.6);
+    transition: background 0.55s ease, border-color 0.55s ease, box-shadow 0.55s ease;
+  }
+  .tracker-demo::before {
+    content: '';
+    position: absolute;
+    inset: 0.55rem;
+    border: 1px solid rgba(85, 65, 34, 0.12);
+    border-radius: 3px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .tracker-demo::after {
+    content: '';
+    position: absolute;
+    inset: auto -14% -28% 42%;
+    height: 52%;
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--tracker-accent) 24%, transparent), transparent 66%);
+    opacity: 0.6;
+    pointer-events: none;
+    transition: background 0.55s ease;
+    z-index: 0;
+  }
+  .tracker-label-row {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: var(--earth-deep);
+    font-family: 'IM Fell English', serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+  .tracker-label-row .seal-tag {
+    border: 1px solid rgba(166, 66, 50, 0.32);
+    color: var(--wax);
+    padding: 0.23rem 0.45rem;
+    font-size: 0.58rem;
+    letter-spacing: 0.18em;
+    transform: rotate(2deg);
+  }
+  .tier-strip {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+    margin-bottom: 1.1rem;
+  }
+  .tier-button {
+    min-width: 0;
+    border: 1px solid rgba(85, 65, 34, 0.16);
+    background: rgba(255, 255, 255, 0.18);
+    padding: 0.62rem 0.56rem;
+    color: var(--ink-soft);
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.28s ease, background 0.28s ease, color 0.28s ease, transform 0.28s ease, box-shadow 0.28s ease;
+    appearance: none;
+    border-radius: 0;
+  }
+  .tier-button:hover,
+  .tier-button:focus-visible {
+    border-color: color-mix(in srgb, var(--tracker-accent) 62%, transparent);
+    color: var(--ink);
+    transform: translateY(-1px);
+    outline: none;
+  }
+  .tier-button.active {
+    border-color: color-mix(in srgb, var(--tracker-accent) 72%, transparent);
+    background: color-mix(in srgb, var(--tracker-accent) 15%, rgba(255, 255, 255, 0.22));
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tracker-accent) 16%, transparent);
+    color: var(--ink);
+  }
+  .tier-step {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--tracker-accent-strong);
+    font-family: 'IM Fell English', serif;
+    font-size: 0.54rem;
+    font-weight: 700;
+    letter-spacing: 0.17em;
+    text-transform: uppercase;
+  }
+  .tier-name {
+    display: block;
+    overflow-wrap: anywhere;
+    font-family: 'IM Fell English', 'Cormorant Garamond', serif;
+    font-size: clamp(0.92rem, 1.6vw, 1.08rem);
+    font-style: italic;
+    font-weight: 700;
+    line-height: 1.08;
+  }
+  .tracker-topline {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  .tracker-number {
+    color: var(--tracker-accent);
+    font-family: 'IM Fell English', 'Cormorant Garamond', serif;
+    font-size: 1.85rem;
+    font-style: italic;
+    transition: color 0.45s ease;
+  }
+  .tracker-demo .card-kicker {
+    margin: 0 0 0.35rem;
+    color: var(--ink-soft);
+    font-family: 'IM Fell English', serif;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: color 0.45s ease;
+  }
+  .tracker-exp {
+    position: relative;
+    z-index: 1;
+    width: min(220px, 100%);
+    height: 0.45rem;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--tracker-accent) 34%, rgba(85, 65, 34, 0.14));
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .tracker-exp-fill {
+    display: block;
+    width: var(--tracker-exp, 32%);
+    height: 100%;
+    background:
+      linear-gradient(90deg, color-mix(in srgb, var(--tracker-accent) 46%, transparent), var(--tracker-accent)),
+      repeating-linear-gradient(90deg, transparent 0, transparent 0.5rem, rgba(255, 255, 255, 0.22) 0.55rem, rgba(255, 255, 255, 0.22) 0.6rem);
+    transition: width 0.7s cubic-bezier(0.19, 1, 0.22, 1), background 0.45s ease;
+  }
+  .radar-wrap {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    min-height: 250px;
+    margin: 0.4rem 0 0.9rem;
+  }
+  .radar-wrap::before {
+    content: '';
+    position: absolute;
+    width: min(78%, 280px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--tracker-accent) 14%, transparent), transparent 68%);
+    filter: blur(3px);
+    transition: background 0.45s ease;
+  }
+  .radar-chart {
+    position: relative;
+    z-index: 2;
+    width: min(94%, 290px);
+    color: var(--earth-deep);
+    opacity: 0.92;
+  }
+  .radar-area {
+    fill: var(--tracker-area);
+    stroke: var(--tracker-stroke);
+    stroke-width: 2.2;
+    transition: fill 0.45s ease, stroke 0.45s ease, filter 0.45s ease;
+  }
+  .radar-ring {
+    fill: none;
+    stroke: rgba(85, 65, 34, 0.18);
+    stroke-width: 1;
+  }
+  .radar-axis {
+    stroke: rgba(85, 65, 34, 0.16);
+    stroke-width: 1;
+  }
+  .radar-label {
+    fill: var(--tracker-label);
+    font-family: 'IM Fell English', 'Lora', Georgia, serif;
+    font-size: 8.5px;
+    font-style: italic;
+    letter-spacing: 0.04em;
+    transition: fill 0.45s ease;
+  }
+  .reader-list {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.42rem;
+    margin-top: 0.4rem;
+  }
+  .reader-list span {
+    border: 1px solid rgba(85, 65, 34, 0.13);
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 0.55rem;
+    color: var(--ink-soft);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.72rem;
+    text-align: center;
+    transition: border-color 0.25s ease, background 0.25s ease, color 0.25s ease;
+  }
+  .reader-list span.active {
+    border-color: color-mix(in srgb, var(--tracker-accent) 52%, transparent);
+    background: color-mix(in srgb, var(--tracker-accent) 15%, rgba(255, 255, 255, 0.2));
+    color: var(--ink);
+  }
+
+  /* ======================================================
+     STORY — cinematic scroll sequence
+     Intermission → text-only beats → illustrated beats →
+     closing manifesto. Paced like film scenes.
+     ====================================================== */
+
+  /* BEAT 0 — INTERMISSION (dark blue title card) */
+  .intermission {
+    position: relative;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 6rem 2rem;
+    background:
+      radial-gradient(ellipse at 50% 40%, rgba(40, 55, 80, 0.5) 0%, transparent 65%),
+      linear-gradient(170deg, #0d1420 0%, #162030 40%, #0f1a28 100%);
+    color: #fff;
+    overflow: hidden;
+  }
+  .intermission::before,
+  .intermission::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(60%, 400px);
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(168, 134, 84, 0.45), transparent);
+  }
+  .intermission::before { top: 30%; }
+  .intermission::after  { bottom: 30%; }
+  .intermission-eyebrow {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    letter-spacing: 0.42em;
+    text-transform: uppercase;
+    color: rgba(168, 134, 84, 0.85);
+    margin-bottom: 2rem;
+  }
+  .intermission-line {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(1.8rem, 4.2vw, 3.6rem);
+    line-height: 1.15;
+    color: rgba(255, 250, 240, 0.92);
+    max-width: 20ch;
+    margin: 0 auto 1.6rem;
+    text-shadow: 0 2px 30px rgba(0, 0, 0, 0.4);
+  }
+  .intermission-ornament {
+    color: var(--gold);
+    font-size: 1rem;
+    letter-spacing: 0.7rem;
+    opacity: 0.7;
+  }
+
+  /* SHARED — story beats (text-only + illustrated) */
+  .story-beat {
+    position: relative;
+    overflow: hidden;
+  }
+  .story-beat .beat-eyebrow {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    letter-spacing: 0.36em;
+    text-transform: uppercase;
+    margin-bottom: 1.4rem;
+  }
+
+  /* Beat 2 — lead eyebrow (same font as eyebrow, but larger for dominance) */
+  .story-beat .beat-eyebrow.beat-eyebrow--lead {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: clamp(1.5rem, 3vw, 2.4rem);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-weight: 400;
+    display: block;
+    margin-bottom: 1.6rem;
+    line-height: 1.4;
+  }
+
+  /* TEXT-ONLY beats (centered, half-screen) */
+  .story-beat--center {
+    min-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: clamp(4rem, 8vw, 7rem) 2rem;
+    background: var(--parchment);
+  }
+  .story-beat--center::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(139, 106, 61, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .story-beat--center .beat-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+  }
+  .story-beat--center .beat-eyebrow {
+    color: var(--earth);
+    justify-content: center;
+  }
+  .story-beat--center .beat-title {
+    font-family: 'IM Fell English', serif;
+    font-size: clamp(2rem, 4.2vw, 3.8rem);
+    line-height: 1.08;
+    font-weight: 400;
+    color: var(--ink);
+    margin: 0 0 1.6rem;
+    letter-spacing: -0.005em;
+  }
+  .story-beat--center .beat-body {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--ink-soft);
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  /* Full-height centered beat */
+  .story-beat--full {
+    min-height: 100vh;
+  }
+  .story-beat--full .beat-title {
+    font-size: clamp(2.4rem, 5vw, 4.4rem);
+  }
+  .story-beat--full .beat-body {
+    font-size: 1.25rem;
+    max-width: 620px;
+  }
+
+  /* ILLUSTRATED beats (two-column, full-screen height) */
+  .story-beat--split {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: clamp(4rem, 8vw, 6rem) 2rem;
+    background: var(--parchment);
+  }
+  .story-beat--split::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(139, 106, 61, 0.06) 0%, transparent 45%),
+      radial-gradient(circle at 85% 80%, rgba(96, 72, 40, 0.07) 0%, transparent 45%);
+    pointer-events: none;
+  }
+  .story-beat--split .beat-inner {
+    max-width: 1180px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.1fr);
+    gap: clamp(2.2rem, 6vw, 5.5rem);
+    align-items: center;
+  }
+  .story-beat--split.reverse .beat-art  { order: 2; }
+  .story-beat--split.reverse .beat-copy { order: 1; }
+  .story-beat--split .beat-eyebrow {
+    color: var(--earth);
+  }
+  .story-beat--split .beat-title {
+    font-family: 'IM Fell English', serif;
+    font-size: clamp(2.2rem, 4.4vw, 4.2rem);
+    line-height: 1.04;
+    font-weight: 400;
+    color: var(--ink);
+    margin: 0 0 1.6rem;
+    letter-spacing: -0.005em;
+  }
+  .story-beat--split .beat-title em {
+    font-style: italic;
+    color: var(--earth-deep);
+  }
+  .story-beat--split .beat-body {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--ink-soft);
+    max-width: 540px;
+  }
+
+  /* CLOSING BEAT (centered, full-screen, manifesto + CTA) */
+  .story-beat--closing {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: clamp(5rem, 10vw, 8rem) 2rem;
+    background:
+      radial-gradient(circle at 50% 40%, rgba(168, 134, 84, 0.08) 0%, transparent 55%),
+      var(--parchment-deep);
+  }
+  .story-beat--closing .beat-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+  }
+  .story-beat--closing .beat-eyebrow {
+    color: var(--earth-deep);
+    justify-content: center;
+  }
+  .story-beat--closing .beat-title {
+    font-family: 'IM Fell English', serif;
+    font-size: clamp(2.6rem, 5.5vw, 5rem);
+    line-height: 1.04;
+    font-weight: 400;
+    color: var(--ink);
+    margin: 0 0 2rem;
+    letter-spacing: -0.01em;
+  }
+  .story-beat--closing .beat-body {
+    font-family: 'Lora', Georgia, serif;
+    font-size: clamp(1.1rem, 1.6vw, 1.25rem);
+    line-height: 1.8;
+    color: var(--ink-soft);
+    max-width: 560px;
+    margin: 0 auto 3rem;
+  }
+  .story-beat--closing .beat-body em {
+    font-family: 'Cormorant Garamond', 'IM Fell English', serif;
+    font-style: normal;
+    font-weight: 700;
+    font-size: clamp(2.2rem, 4.5vw, 3.8rem);
+    display: block;
+    margin-bottom: 1.6rem;
+    color: var(--ink);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+  .story-beat--closing .beat-cta-row {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Postal artifact wrappers */
+  .beat-art {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 380px;
+  }
+  .postal-artifact {
+    position: relative;
+    width: 100%;
+    max-width: 460px;
+    filter: drop-shadow(0 24px 38px rgba(40, 28, 16, 0.28));
+  }
+  .postal-artifact svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .btn-ink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.95rem 2.2rem;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.88rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: var(--cream);
+    border: 1px solid var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(28, 18, 8, 0.25);
+  }
+  .btn-ink:hover {
+    background: var(--earth-deep);
+    border-color: var(--earth-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 38px rgba(28, 18, 8, 0.32);
+  }
+
+  /* ======================================================
+     RESERVE A SEAT — two-tier
+     Cleaner contrast on benefits, gold check icons,
+     elevated founding seat.
+     ====================================================== */
+  .reserve {
+    position: relative;
+    padding: clamp(5rem, 8vw, 7rem) 2rem clamp(5rem, 7vw, 6rem);
+    background:
+      radial-gradient(circle at 15% 10%, rgba(107, 143, 168, 0.13) 0%, transparent 28rem),
+      radial-gradient(circle at 92% 25%, rgba(139, 106, 61, 0.14) 0%, transparent 26rem),
+      linear-gradient(180deg, var(--parchment) 0%, var(--parchment-deep) 100%);
+    overflow: hidden;
+  }
+
+  .reserve-mark {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 1.2rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.3), transparent 35%),
+      linear-gradient(145deg, var(--wax-glow), var(--wax));
+    box-shadow: 0 12px 28px rgba(80, 26, 18, 0.3);
+    color: var(--cream);
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 1.5rem;
+    letter-spacing: 0;
+  }
+
+  .reserve-header {
+    text-align: center;
+    margin: 0 auto 3.2rem;
+    max-width: 720px;
+  }
+  .reserve-header .eyebrow {
+    justify-content: center;
+    color: var(--earth-deep);
+  }
+  .reserve-header h2 {
+    font-family: 'IM Fell English', serif;
+    font-size: clamp(2.4rem, 4.8vw, 4.4rem);
+    color: var(--ink);
+    margin: 1.1rem 0 0.6rem;
+    font-weight: 400;
+    line-height: 1.02;
+  }
+  .reserve-header h2 em {
+    font-style: italic;
+    color: var(--earth-deep);
+  }
+  .reserve-header > p {
+    color: var(--ink-soft);
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1.08rem;
+    line-height: 1.65;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  .tiers {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.6rem;
+    align-items: stretch;
+  }
+
+  .tier {
+    position: relative;
+    padding: 2.2rem 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    background:
+      linear-gradient(160deg, rgba(255, 250, 235, 0.96), rgba(232, 220, 190, 0.86));
+    border: 1px solid rgba(96, 72, 40, 0.22);
+    box-shadow:
+      0 22px 50px -22px rgba(60, 40, 20, 0.32),
+      inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+  }
+  .tier:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 28px 60px -20px rgba(60, 40, 20, 0.38),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+  .tier-founding {
+    background:
+      linear-gradient(160deg, rgba(255, 250, 235, 0.98), rgba(225, 205, 158, 0.94)),
+      radial-gradient(circle at 90% 0%, rgba(168, 134, 84, 0.4), transparent 60%);
+    border-color: rgba(168, 134, 84, 0.55);
+    box-shadow:
+      0 30px 60px -20px rgba(60, 40, 20, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  }
+
+  .tier-badge {
+    position: absolute;
+    top: 1.2rem;
+    right: 1.2rem;
+    padding: 0.28rem 0.62rem;
+    background: var(--wax);
+    color: var(--cream);
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.7rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    transform: rotate(2deg);
+    box-shadow: 0 4px 14px rgba(80, 26, 18, 0.35);
+  }
+
+  .tier-head {
+    margin-bottom: 1.6rem;
+  }
+  .tier-head h3 {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.95rem;
+    font-weight: 400;
+    color: var(--ink);
+    margin: 0 0 0.3rem;
+    line-height: 1.05;
+  }
+  .tier-tagline {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--earth-deep);
+    margin: 0 0 0.8rem;
+  }
+  .tier-price {
+    font-family: 'Lora', Georgia, serif;
+    font-size: 0.92rem;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .tier-price strong {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .tier-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(96, 72, 40, 0.4), transparent);
+    margin: 0 0 1.4rem;
+  }
+
+  .benefits {
+    list-style: none;
+    margin: 0 0 1.6rem;
+    padding: 0;
+    flex: 1;
+  }
+  .benefits li {
+    position: relative;
+    padding: 0.42rem 0 0.42rem 1.7rem;
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.98rem;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+  .benefits li strong {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .benefits li .desc {
+    color: var(--ink-soft);
+    font-weight: 300;
+  }
+  .benefits li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0.42rem;
+    width: 1.1rem;
+    height: 1.1rem;
+    line-height: 1.1rem;
+    text-align: center;
+    color: var(--gold);
+    font-family: 'IM Fell English', serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+  .tier-founding .benefits li::before {
+    color: var(--wax);
+  }
+
+  .tier-meta {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: var(--earth-deep);
+    margin: 0 0 1rem;
+    letter-spacing: 0.04em;
+  }
+  .tier-meta strong {
+    color: var(--ink);
+    font-weight: 400;
+  }
+
+  .tier-form {
+    margin-top: auto;
+  }
+  .tier-input-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    border: 1px solid rgba(85, 65, 34, 0.28);
+    background: rgba(255, 255, 255, 0.55);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .tier-input-row:focus-within {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 4px rgba(168, 134, 84, 0.18);
+  }
+  .tier-input-row input {
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    padding: 0.85rem 0.95rem;
+    color: var(--ink);
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.98rem;
+  }
+  .tier-input-row input::placeholder {
+    color: rgba(94, 78, 52, 0.55);
+    font-style: italic;
+  }
+  .tier-input-row button {
+    border: 0;
+    border-left: 1px solid rgba(85, 65, 34, 0.16);
+    background: var(--ink);
+    color: var(--cream);
+    padding: 0.85rem 1.2rem;
+    font-family: 'IM Fell English', serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.25s ease, color 0.25s ease;
+    white-space: nowrap;
+  }
+  .tier-input-row button:hover {
+    background: var(--gold);
+    color: var(--ink);
+  }
+  .tier-founding .tier-input-row button {
+    background: var(--wax);
+  }
+  .tier-founding .tier-input-row button:hover {
+    background: var(--gold);
+    color: var(--ink);
+  }
+  .tier-status {
+    min-height: 1.2rem;
+    margin-top: 0.65rem;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.78rem;
+    color: var(--earth-deep);
+    line-height: 1.45;
+  }
+  .tier-status.success { color: var(--moss-deep); }
+  .tier-status.error   { color: var(--wax); }
+  .tier-status strong  { color: var(--ink); font-weight: 400; }
+
+  /* ======================================================
+     FAQ
+     ====================================================== */
+  .faq {
+    padding: clamp(5rem, 8vw, 7rem) 2rem clamp(5rem, 7vw, 6rem);
+    background: var(--parchment-deep);
+    position: relative;
+    overflow: hidden;
+  }
+  .faq::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 80% 20%, rgba(139, 106, 61, 0.09) 0%, transparent 28rem),
+      radial-gradient(circle at 10% 80%, rgba(107, 143, 168, 0.07) 0%, transparent 24rem);
+    pointer-events: none;
+  }
+  .faq-header {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 4rem;
+  }
+  .faq-eyebrow {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.82rem;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--earth);
+    display: block;
+    margin-bottom: 1.2rem;
+  }
+  .faq-title {
+    font-family: 'IM Fell English', serif;
+    font-weight: 400;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1;
+    color: var(--ink);
+    margin: 0;
+  }
+  .faq-list {
+    max-width: 720px;
+    margin: 0 auto;
+    list-style: none;
+    padding: 0;
+  }
+  .faq-item {
+    border-top: 1px solid rgba(107, 80, 42, 0.2);
+  }
+  .faq-item:last-child {
+    border-bottom: 1px solid rgba(107, 80, 42, 0.2);
+  }
+  .faq-item summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+    cursor: pointer;
+    list-style: none;
+    font-family: 'IM Fell English', serif;
+    font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+    color: var(--ink);
+    line-height: 1.35;
+    transition: color 0.2s;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::marker { display: none; }
+  .faq-item summary:hover { color: var(--earth); }
+  .faq-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border: 1px solid rgba(107, 80, 42, 0.35);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--earth);
+    transition: transform 0.25s ease, border-color 0.2s;
+    font-family: Georgia, serif;
+    font-style: normal;
+  }
+  .faq-item[open] .faq-icon {
+    transform: rotate(45deg);
+    border-color: var(--earth);
+  }
+  .faq-answer {
+    padding: 0 0 1.8rem;
+    font-family: 'Lora', Georgia, serif;
+    font-size: 1rem;
+    line-height: 1.82;
+    color: var(--ink-soft);
+    max-width: 620px;
+  }
+  .faq-answer a {
+    color: var(--earth);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ======================================================
+     FOOTER
+     ====================================================== */
+  .footer {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(168, 134, 84, 0.12), transparent 28rem),
+      #15110e;
+    color: var(--cream);
+    padding: 4rem 3rem 3rem;
+    position: relative;
+  }
+  .footer-top {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 2.4rem;
+  }
+  .footer-brand {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.8rem;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+  }
+  .footer-est {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.88rem;
+    letter-spacing: 0.25em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .footer-quote {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 1.25rem;
+    color: rgba(253, 248, 233, 0.78);
+    text-align: center;
+  }
+  .footer-ornament {
+    color: var(--gold);
+    letter-spacing: 0.7rem;
+    margin-top: 0.55rem;
+    font-size: 1rem;
+    text-align: center;
+  }
+  .footer-links {
+    display: flex;
+    gap: 2rem;
+    justify-content: flex-end;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 1rem;
+  }
+  .footer-links a {
+    color: rgba(253, 248, 233, 0.78);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .footer-links a:hover { color: var(--gold); }
+
+  .footer-privacy {
+    max-width: 760px;
+    margin: 0 auto;
+    padding-top: 1.8rem;
+    border-top: 1px solid rgba(168, 134, 84, 0.22);
+    text-align: center;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: rgba(253, 248, 233, 0.55);
+    letter-spacing: 0.04em;
+  }
+
+  /* ======================================================
+     ANIMATIONS + REVEAL
+     ====================================================== */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes demoReveal {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ======================================================
+     RESPONSIVE
+     ====================================================== */
+  @media (max-width: 900px) {
+    .nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+
+    .hero-zone { min-height: 100vh; }
+    .functions-section { padding: 3.5rem 1.25rem 4.5rem; }
+    .tab-panel { grid-template-columns: 1fr; gap: 1.75rem; }
+    .tabs-nav { padding: 0.35rem; gap: 0.25rem; }
+    .tab-btn { padding: 0.7rem 0.65rem; font-size: 0.86rem; }
+    .demo { min-height: 460px; padding: 1.2rem 1rem 1rem; }
+    .gate-form-row { flex-direction: column; }
+    .gate-submit { padding: 0.85rem; }
+    .tracker-demo { padding: 1.1rem 1rem; }
+    .tier-strip { gap: 0.32rem; }
+    .tier-button { padding: 0.5rem 0.45rem; }
+    .tier-name { font-size: 0.86rem; }
+    .reader-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .radar-wrap { min-height: 220px; }
+
+    .intermission { min-height: 50vh; padding: 5rem 1.5rem; }
+    .story-beat--center { min-height: 45vh; padding: 3.5rem 1.5rem; }
+    .story-beat--full { min-height: 80vh; }
+    .story-beat--split { min-height: auto; padding: 4rem 1.5rem; }
+    .story-beat--split .beat-inner { grid-template-columns: 1fr; gap: 2.4rem; }
+    .story-beat--split.reverse .beat-art  { order: 1; }
+    .story-beat--split.reverse .beat-copy { order: 2; }
+    .beat-art { min-height: 280px; }
+    .postal-artifact { max-width: 360px; }
+    .story-beat--closing { min-height: 80vh; padding: 4rem 1.5rem; }
+
+    .reserve { padding: 4rem 1.25rem; }
+    .tiers { grid-template-columns: 1fr; gap: 1.2rem; }
+
+    .demo-input-row,
+    .tier-input-row { grid-template-columns: 1fr; }
+    .demo-input-row button,
+    .tier-input-row button {
+      border-left: 0;
+      border-top: 1px solid rgba(85, 65, 34, 0.16);
+    }
+    .tier-strip,
+    .tracker-demo .reader-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .footer { padding: 3rem 1.5rem 2.5rem; }
+    .footer-top {
+      grid-template-columns: 1fr;
+      text-align: center;
+      gap: 1.6rem;
+    }
+    .footer-links { justify-content: center; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand"><span class="mark">✦</span> Owlpo <small>The Owl's Postoffice</small></div>
+  <div class="nav-links">
+    <a href="#functions">Functions</a>
+    <a href="#story">The Story</a>
+    <a href="#reserve">Reserve</a>
+  </div>
+</nav>
+
+<!-- ======================================================
+     SECTION 1 — HERO (old-movie title card)
+     ====================================================== -->
+<section class="hero-section">
+  <div class="hero-zone">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">I read therefore I am.</h1>
+      <p class="hero-subtitle">Your book discovery secretary for the bored, the curious, and the ambitious.</p>
+      <div class="hero-cta-row">
+        <a href="#reserve" class="btn-primary">Reserve my seat <span class="arr">→</span></a>
+        <p class="hero-social-proof">Joined by <strong>247</strong> curious readers already.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================
+     SECTION 2 — FUNCTIONS (chat-style demo, standalone)
+     ====================================================== -->
+<section class="functions-section" id="functions" aria-labelledby="functions-title">
+  <div class="functions-inner">
+
+    <header class="functions-header reveal">
+      <p class="functions-eyebrow">How the Owl works</p>
+      <h2 class="functions-title" id="functions-title">Try it. The Owl is <em>listening</em>.</h2>
+      <p class="functions-sub">Tap a question. Get a real answer. The first letter is on us — the rest arrive in your inbox.</p>
+    </header>
+
+    <nav class="tabs-nav" role="tablist" aria-label="Owlpo functions">
+      <button class="tab-btn" role="tab" aria-selected="true" data-tab="discover" id="tab-discover" aria-controls="panel-discover" type="button">
+        Discover Books
+      </button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="ask" id="tab-ask" aria-controls="panel-ask" type="button">
+        Ask Anything
+      </button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="skip" id="tab-skip" aria-controls="panel-skip" type="button">
+        Skip Pages
+      </button>
+      <button class="tab-btn" role="tab" aria-selected="false" data-tab="sharper" id="tab-sharper" aria-controls="panel-sharper" type="button">
+        Become Sharper
+      </button>
+    </nav>
+
+    <div class="tab-panels">
+
+      <!-- TAB 1 — DISCOVER BOOKS -->
+      <div class="tab-panel active" role="tabpanel" id="panel-discover" data-panel="discover" aria-labelledby="tab-discover">
+        <div class="explainer reveal">
+          <h3>Discover books based on <em>mood &amp; scenario</em>.</h3>
+          <p>Bedtime? Fresh morning? Sunny afternoon at the park? Just ask the Owl. We read your mood, the weather, your calendar — and find the book made for <span class="accent">this exact moment</span>.</p>
+          <p class="try-it-arrow">Try it <span class="arrow">→</span></p>
+        </div>
+
+        <div class="demo reveal" data-demo="discover">
+          <div class="demo-topbar">
+            <div class="demo-topbar-left">
+              <div class="owl-mini">✦</div>
+              <span>The Owl's Postoffice</span>
+            </div>
+            <div class="demo-topbar-right"><span class="live-dot"></span>Live demo</div>
+          </div>
+
+          <div class="demo-body" data-demo-body>
+            <div class="owl-prompt">
+              <div class="owl-avatar">✦</div>
+              <div class="owl-bubble">Tell me where you are right now <span class="sparkle">✦</span> — I'll find the book made for this moment.</div>
+            </div>
+
+            <div class="chips-container" data-chips>
+              <button class="chip" type="button" data-response="discover-1"><span class="chip-icon">🌙</span>Tonight, before bed</button>
+              <button class="chip" type="button" data-response="discover-2"><span class="chip-icon">☀</span>Fresh morning, ready to start</button>
+              <button class="chip" type="button" data-response="discover-3"><span class="chip-icon">🍃</span>A slow Sunday afternoon</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2 — ASK ANYTHING -->
+      <div class="tab-panel" role="tabpanel" id="panel-ask" data-panel="ask" aria-labelledby="tab-ask">
+        <div class="explainer reveal">
+          <h3>Ask anything. Get a <em>book</em> in return.</h3>
+          <p>Some questions are too important for a generic ChatGPT answer. A career crisis. A breakup. Your wildest dream. For every question that won't let you sleep, an author has already lived it, researched it for decades, and written the book waiting for you. <span class="accent">Skip the AI noise.</span></p>
+          <p class="try-it-arrow">Try it <span class="arrow">→</span></p>
+        </div>
+
+        <div class="demo reveal" data-demo="ask">
+          <div class="demo-topbar">
+            <div class="demo-topbar-left">
+              <div class="owl-mini">✦</div>
+              <span>The Owl's Postoffice</span>
+            </div>
+            <div class="demo-topbar-right"><span class="live-dot"></span>Live demo</div>
+          </div>
+
+          <div class="demo-body" data-demo-body>
+            <div class="owl-prompt">
+              <div class="owl-avatar">✦</div>
+              <div class="owl-bubble">What's the question keeping you up <span class="sparkle">✦</span> — I'll find the book with the answer.</div>
+            </div>
+
+            <div class="chips-container" data-chips>
+              <button class="chip" type="button" data-response="ask-1"><span class="chip-icon">⚡</span>How do I stop overthinking everything?</button>
+              <button class="chip" type="button" data-response="ask-2"><span class="chip-icon">🚪</span>Should I leave a stable job to chase something?</button>
+              <button class="chip" type="button" data-response="ask-3"><span class="chip-icon">💔</span>Why do I keep dating the same person?</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3 — SKIP PAGES -->
+      <div class="tab-panel" role="tabpanel" id="panel-skip" data-panel="skip" aria-labelledby="tab-skip">
+        <div class="explainer reveal">
+          <h3>Book preview, <em>tailored</em> to your question.</h3>
+          <p>Some books don't deserve 300 pages. Others hide gems in every line. Tell us your question, and we'll hand you the chapters, the insights, the paragraphs <span class="accent">written for you</span> — so you can choose to read deeper, or move on.</p>
+          <p class="try-it-arrow">Try it <span class="arrow">→</span></p>
+        </div>
+
+        <div class="demo reveal" data-demo="skip">
+          <div class="demo-topbar">
+            <div class="demo-topbar-left">
+              <div class="owl-mini">✦</div>
+              <span>The Owl's Postoffice</span>
+            </div>
+            <div class="demo-topbar-right"><span class="live-dot"></span>Live demo</div>
+          </div>
+
+          <div class="demo-body" data-demo-body>
+            <div class="owl-prompt">
+              <div class="owl-avatar">✦</div>
+              <div class="owl-bubble">Pick a book and tell me your angle <span class="sparkle">✦</span> — I'll pull the chapters that matter.</div>
+            </div>
+
+            <div class="chips-container" data-chips>
+              <button class="chip" type="button" data-response="skip-1"><span class="chip-icon">📕</span>Atomic Habits — for chronic restarters</button>
+              <button class="chip" type="button" data-response="skip-2"><span class="chip-icon">📗</span>Psychology of Money — for a college student</button>
+              <button class="chip" type="button" data-response="skip-3"><span class="chip-icon">📙</span>Sapiens — for an early-stage founder</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4 — BECOME SHARPER (nostalgic tracker) -->
+      <div class="tab-panel" role="tabpanel" id="panel-sharper" data-panel="sharper" aria-labelledby="tab-sharper">
+        <div class="explainer reveal">
+          <h3>Track reading history. Watch yourself <em>grow</em>.</h3>
+          <p>Meet your <span class="accent">Reading Identity</span>. Every book you finish leaves a mark — and for once, you can see it. The wisdom you've collected, the reader you're becoming, finally on the record. Worth showing off.</p>
+          <p class="try-it-arrow">Try it <span class="arrow">→</span></p>
+        </div>
+
+        <article class="tracker-demo reveal" data-demo="tracker">
+          <div class="tracker-label-row">
+            <span>Reading Identity Ledger</span>
+            <span class="seal-tag">tier I</span>
+          </div>
+
+          <div class="tier-strip" aria-label="Growth tracker tiers">
+            <button class="tier-button active" type="button" data-tracker-tier="0" aria-pressed="true">
+              <span class="tier-step">Tier I</span>
+              <span class="tier-name">Owl Apprentice</span>
+            </button>
+            <button class="tier-button" type="button" data-tracker-tier="1" aria-pressed="false">
+              <span class="tier-step">Tier II</span>
+              <span class="tier-name">Owl Editor</span>
+            </button>
+            <button class="tier-button" type="button" data-tracker-tier="2" aria-pressed="false">
+              <span class="tier-step">Tier III</span>
+              <span class="tier-name">Legendary Director</span>
+            </button>
+          </div>
+
+          <div class="tracker-topline" aria-live="polite">
+            <div>
+              <p class="card-kicker">5 books logged</p>
+              <div class="tracker-exp" role="progressbar" aria-label="Tier experience" aria-valuemin="0" aria-valuemax="100" aria-valuenow="32">
+                <span class="tracker-exp-fill"></span>
+              </div>
+            </div>
+            <div class="tracker-number">32%</div>
+          </div>
+
+          <div class="radar-wrap" aria-label="Sample reading growth radar chart">
+            <svg class="radar-chart" viewBox="0 0 320 300" role="img" aria-labelledby="radar-title radar-desc">
+              <title id="radar-title">Reading growth radar</title>
+              <desc id="radar-desc">Owl Apprentice growth across health, relationship, investing, career, mindset, and literature.</desc>
+              <polygon class="radar-ring" points="160,38 257,94 257,206 160,262 63,206 63,94"></polygon>
+              <polygon class="radar-ring" points="160,70 229,110 229,190 160,230 91,190 91,110"></polygon>
+              <polygon class="radar-ring" points="160,102 202,126 202,174 160,198 118,174 118,126"></polygon>
+              <line class="radar-axis" x1="160" y1="150" x2="160" y2="38"></line>
+              <line class="radar-axis" x1="160" y1="150" x2="257" y2="94"></line>
+              <line class="radar-axis" x1="160" y1="150" x2="257" y2="206"></line>
+              <line class="radar-axis" x1="160" y1="150" x2="160" y2="262"></line>
+              <line class="radar-axis" x1="160" y1="150" x2="63" y2="206"></line>
+              <line class="radar-axis" x1="160" y1="150" x2="63" y2="94"></line>
+              <polygon class="radar-area" points="160,121 201,126 177,160 160,185 94,188 86,107"></polygon>
+              <text class="radar-label" x="160" y="22" text-anchor="middle">Health</text>
+              <text class="radar-label" x="272" y="86" text-anchor="middle">Relationship</text>
+              <text class="radar-label" x="272" y="216" text-anchor="middle">Investing</text>
+              <text class="radar-label" x="160" y="286" text-anchor="middle">Career</text>
+              <text class="radar-label" x="48" y="216" text-anchor="middle">Mindset</text>
+              <text class="radar-label" x="48" y="86" text-anchor="middle">Literature</text>
+            </svg>
+          </div>
+
+          <div class="reader-list" aria-label="Sample tracked dimensions">
+            <span class="active">Health 26%</span>
+            <span>Relationship 42%</span>
+            <span>Investing 18%</span>
+            <span>Career 31%</span>
+            <span>Mindset 68%</span>
+            <span>Literature 76%</span>
+          </div>
+        </article>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================
+     BEAT 0 — INTERMISSION (dark blue title card)
+     ====================================================== -->
+<div class="intermission reveal" id="story">
+  <p class="intermission-eyebrow">— Intermission —</p>
+  <h2 class="intermission-line">A short story about why Owlpo had to exist.</h2>
+  <div class="intermission-ornament">✦ ◆ ✦</div>
+</div>
+
+
+<!-- ======================================================
+     BEAT 1 — A NOISY WORLD (centered, text-only, half-screen)
+     ====================================================== -->
+<section class="story-beat story-beat--center">
+  <div class="beat-inner reveal">
+    <p class="beat-eyebrow">Look around</p>
+    <h2 class="beat-title">A Noisy World</h2>
+    <p class="beat-body">We live in the noisiest era in human history. More content, less thinking. More answers, less actual understanding.</p>
+  </div>
+</section>
+
+
+<!-- ======================================================
+     BEAT 2 — THE DOWNGRADE (centered, text-only, half-screen)
+     ====================================================== -->
+<section class="story-beat story-beat--center">
+  <div class="beat-inner reveal">
+    <p class="beat-eyebrow beat-eyebrow--lead">While AI upgrades, we downgrade</p>
+    <h2 class="beat-title">The Downgrade</h2>
+    <p class="beat-body">Feeds that never stop. Scrolls that fry our brains. AI gets smarter every quarter — we get more distracted every day.</p>
+  </div>
+</section>
+
+
+<!-- ======================================================
+     BEAT 3 — THE ANSWER (centered, text-only, full-screen)
+     ====================================================== -->
+<section class="story-beat story-beat--split">
+  <div class="beat-inner">
+
+    <div class="beat-copy reveal">
+      <p class="beat-eyebrow">The Answer</p>
+      <h2 class="beat-title">Books are more important than ever before.</h2>
+      <p class="beat-body">In books, you sit with Nietzsche, Aristotle, Austen — and every mind that shaped human thinking. You feel what they felt. You think alongside them. You reflect on your own. Reading is the best format of brain training — and nothing about that is wasted time.</p>
+    </div>
+
+    <div class="beat-art reveal">
+      <div class="postal-artifact" aria-hidden="true">
+        <svg viewBox="0 0 460 540" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="book-noise">
+              <feTurbulence type="fractalNoise" baseFrequency="0.72" numOctaves="2" seed="9"/>
+              <feColorMatrix values="0 0 0 0 0.30 0 0 0 0 0.24 0 0 0 0 0.14 0 0 0 0.14 0"/>
+              <feComposite in2="SourceGraphic" operator="in"/>
+            </filter>
+            <linearGradient id="page-left" x1="1" y1="0" x2="0" y2="0">
+              <stop offset="0%" stop-color="#fef5de"/>
+              <stop offset="70%" stop-color="#f0e2bf"/>
+              <stop offset="100%" stop-color="#dfd0a8"/>
+            </linearGradient>
+            <linearGradient id="page-right" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#fef5de"/>
+              <stop offset="70%" stop-color="#f0e2bf"/>
+              <stop offset="100%" stop-color="#dfd0a8"/>
+            </linearGradient>
+            <linearGradient id="book-cover" x1="0" y1="0" x2="0.2" y2="1">
+              <stop offset="0%" stop-color="#5a3820"/>
+              <stop offset="40%" stop-color="#3f2610"/>
+              <stop offset="100%" stop-color="#2a1808"/>
+            </linearGradient>
+            <radialGradient id="spine-glow" cx="50%" cy="45%" r="55%">
+              <stop offset="0%" stop-color="rgba(210,165,60,0.45)"/>
+              <stop offset="55%" stop-color="rgba(210,165,60,0.12)"/>
+              <stop offset="100%" stop-color="rgba(210,165,60,0)"/>
+            </radialGradient>
+            <linearGradient id="page-edge-b" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#e8d5a0"/>
+              <stop offset="100%" stop-color="#c8b880"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Shadow -->
+          <ellipse cx="230" cy="500" rx="172" ry="13" fill="rgba(20,14,8,0.2)"/>
+
+          <g transform="rotate(-2 230 290)">
+            <!-- Cover sides -->
+            <rect x="58" y="155" width="12" height="268" rx="1" fill="url(#book-cover)"/>
+            <rect x="390" y="155" width="12" height="268" rx="1" fill="url(#book-cover)"/>
+            <!-- Bottom cover -->
+            <rect x="58" y="420" width="344" height="10" rx="2" fill="url(#book-cover)" opacity="0.85"/>
+
+            <!-- Left page -->
+            <path d="M 70 160 Q 130 154 180 158 Q 208 160 222 164 L 222 420 Q 150 424 70 419 Z"
+                  fill="url(#page-left)" stroke="rgba(120,90,40,0.12)" stroke-width="0.5"/>
+            <!-- Right page -->
+            <path d="M 238 164 Q 252 160 280 158 Q 330 154 390 160 L 390 419 Q 310 424 238 420 Z"
+                  fill="url(#page-right)" stroke="rgba(120,90,40,0.12)" stroke-width="0.5"/>
+
+            <!-- Page bottom edges -->
+            <rect x="70" y="417" width="152" height="4" rx="1" fill="url(#page-edge-b)" opacity="0.6"/>
+            <rect x="238" y="417" width="152" height="4" rx="1" fill="url(#page-edge-b)" opacity="0.6"/>
+
+            <!-- Spine -->
+            <rect x="220" y="155" width="20" height="268" rx="1" fill="url(#book-cover)"/>
+            <rect x="224" y="160" width="3" height="258" fill="rgba(80,50,20,0.35)"/>
+            <rect x="233" y="160" width="3" height="258" fill="rgba(80,50,20,0.35)"/>
+
+            <!-- Warm glow from spine -->
+            <ellipse cx="230" cy="292" rx="88" ry="138" fill="url(#spine-glow)"/>
+
+            <!-- Text lines — left page -->
+            <rect x="87" y="198" width="88" height="3" rx="1.5" fill="rgba(60,42,22,0.38)"/>
+            <g fill="rgba(60,42,22,0.2)">
+              <rect x="87" y="222" width="118" height="1.8" rx="0.9"/>
+              <rect x="87" y="235" width="112" height="1.8" rx="0.9"/>
+              <rect x="87" y="248" width="120" height="1.8" rx="0.9"/>
+              <rect x="87" y="261" width="106" height="1.8" rx="0.9"/>
+              <rect x="87" y="274" width="116" height="1.8" rx="0.9"/>
+              <rect x="87" y="300" width="118" height="1.8" rx="0.9"/>
+              <rect x="87" y="313" width="112" height="1.8" rx="0.9"/>
+              <rect x="87" y="326" width="120" height="1.8" rx="0.9"/>
+              <rect x="87" y="339" width="108" height="1.8" rx="0.9"/>
+              <rect x="87" y="352" width="116" height="1.8" rx="0.9"/>
+              <rect x="87" y="378" width="118" height="1.8" rx="0.9"/>
+              <rect x="87" y="391" width="110" height="1.8" rx="0.9"/>
+            </g>
+
+            <!-- Text lines — right page -->
+            <g fill="rgba(60,42,22,0.2)">
+              <rect x="252" y="222" width="116" height="1.8" rx="0.9"/>
+              <rect x="252" y="235" width="122" height="1.8" rx="0.9"/>
+              <rect x="252" y="248" width="110" height="1.8" rx="0.9"/>
+              <rect x="252" y="261" width="118" height="1.8" rx="0.9"/>
+              <rect x="252" y="274" width="114" height="1.8" rx="0.9"/>
+              <rect x="252" y="300" width="116" height="1.8" rx="0.9"/>
+              <rect x="252" y="313" width="120" height="1.8" rx="0.9"/>
+              <rect x="252" y="326" width="108" height="1.8" rx="0.9"/>
+              <rect x="252" y="339" width="122" height="1.8" rx="0.9"/>
+              <rect x="252" y="352" width="114" height="1.8" rx="0.9"/>
+              <rect x="252" y="378" width="116" height="1.8" rx="0.9"/>
+              <rect x="252" y="391" width="118" height="1.8" rx="0.9"/>
+            </g>
+
+            <!-- Ribbon bookmark -->
+            <rect x="290" y="155" width="6" height="95" fill="#7a2020" opacity="0.65"/>
+            <path d="M 290 250 L 293 264 L 296 250" fill="#7a2020" opacity="0.65"/>
+
+            <!-- Page numbers -->
+            <text x="146" y="410" text-anchor="middle" font-family="IM Fell English, serif" font-style="italic" font-size="9" fill="rgba(80,55,28,0.32)">142</text>
+            <text x="314" y="410" text-anchor="middle" font-family="IM Fell English, serif" font-style="italic" font-size="9" fill="rgba(80,55,28,0.32)">143</text>
+          </g>
+
+          <rect x="0" y="0" width="460" height="540" filter="url(#book-noise)" opacity="0.42"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ======================================================
+     BEAT 4 — THE PROBLEM (left text / right art — bookshelf)
+     ====================================================== -->
+<section class="story-beat story-beat--split reverse">
+  <div class="beat-inner">
+
+    <div class="beat-copy reveal">
+      <p class="beat-eyebrow">The Problem</p>
+      <h2 class="beat-title">The empty shelf</h2>
+      <p class="beat-body">But the right book is hard to find. Boring to start. Easy to forget. The book that could change your Tuesday is on a shelf you'll never reach.</p>
+    </div>
+
+    <div class="beat-art reveal">
+      <div class="postal-artifact" aria-hidden="true">
+        <svg viewBox="0 0 460 540" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="shelf-noise">
+              <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="5"/>
+              <feColorMatrix values="0 0 0 0 0.28 0 0 0 0 0.22 0 0 0 0 0.14 0 0 0 0.15 0"/>
+              <feComposite in2="SourceGraphic" operator="in"/>
+            </filter>
+            <linearGradient id="shelf-wood" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#8b6a3d"/>
+              <stop offset="50%" stop-color="#6e5230"/>
+              <stop offset="100%" stop-color="#523c22"/>
+            </linearGradient>
+            <linearGradient id="shelf-back" x1="0" y1="0" x2="0.3" y2="1">
+              <stop offset="0%" stop-color="#e8dcbe"/>
+              <stop offset="100%" stop-color="#d4c5a0"/>
+            </linearGradient>
+            <linearGradient id="dust-fade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="rgba(212,197,160,0)"/>
+              <stop offset="100%" stop-color="rgba(212,197,160,0.4)"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="230" cy="510" rx="185" ry="14" fill="rgba(20,14,8,0.22)"/>
+          <g transform="rotate(-1.5 230 270)">
+            <rect x="55" y="45" width="350" height="440" rx="2" fill="url(#shelf-back)" stroke="rgba(80,55,28,0.35)" stroke-width="0.8"/>
+            <rect x="48" y="45" width="364" height="14" rx="1" fill="url(#shelf-wood)" stroke="rgba(40,28,14,0.5)" stroke-width="0.6"/>
+            <rect x="48" y="155" width="364" height="14" rx="1" fill="url(#shelf-wood)" stroke="rgba(40,28,14,0.5)" stroke-width="0.6"/>
+            <rect x="48" y="275" width="364" height="14" rx="1" fill="url(#shelf-wood)" stroke="rgba(40,28,14,0.5)" stroke-width="0.6"/>
+            <rect x="48" y="385" width="364" height="14" rx="1" fill="url(#shelf-wood)" stroke="rgba(40,28,14,0.5)" stroke-width="0.6"/>
+            <rect x="48" y="471" width="364" height="14" rx="1" fill="url(#shelf-wood)" stroke="rgba(40,28,14,0.5)" stroke-width="0.6"/>
+            <rect x="48" y="45" width="12" height="440" fill="url(#shelf-wood)" opacity="0.7" stroke="rgba(40,28,14,0.4)" stroke-width="0.6"/>
+            <rect x="400" y="45" width="12" height="440" fill="url(#shelf-wood)" opacity="0.7" stroke="rgba(40,28,14,0.4)" stroke-width="0.6"/>
+            <rect x="65" y="148" width="320" height="7" fill="url(#dust-fade)" opacity="0.5"/>
+            <rect x="65" y="268" width="320" height="7" fill="url(#dust-fade)" opacity="0.6"/>
+            <rect x="65" y="378" width="320" height="7" fill="url(#dust-fade)" opacity="0.5"/>
+            <rect x="65" y="464" width="320" height="7" fill="url(#dust-fade)" opacity="0.4"/>
+            <g transform="rotate(-12 140 230)">
+              <rect x="130" y="178" width="18" height="88" rx="1" fill="#7a5c3a" stroke="rgba(40,28,14,0.5)" stroke-width="0.6"/>
+              <rect x="132" y="180" width="2" height="84" fill="rgba(255,255,255,0.15)"/>
+            </g>
+            <ellipse cx="280" cy="370" rx="22" ry="20" fill="none" stroke="rgba(80,40,20,0.15)" stroke-width="1.8"/>
+            <path d="M 62 60 Q 62 95 95 95" fill="none" stroke="rgba(180,170,150,0.3)" stroke-width="0.5"/>
+            <path d="M 62 60 Q 78 78 95 60" fill="none" stroke="rgba(180,170,150,0.2)" stroke-width="0.4"/>
+            <text x="230" y="340" text-anchor="middle" font-family="IM Fell English, serif" font-style="italic" font-size="11" fill="rgba(80,55,28,0.3)">where is the right book?</text>
+          </g>
+          <rect x="0" y="0" width="460" height="540" filter="url(#shelf-noise)" opacity="0.5"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ======================================================
+     BEAT 5 — THE SOLUTION (right text / left art — envelope)
+     ====================================================== -->
+<section class="story-beat story-beat--split reverse">
+  <div class="beat-inner">
+
+    <div class="beat-copy reveal">
+      <p class="beat-eyebrow">The Solution</p>
+      <h2 class="beat-title">Introducing your book discovery secretary</h2>
+      <p class="beat-body">Discover books by mood and moment. Preview only what matters to you. Track every book that leaves a mark. Ask anything, Owlpo fetch you a book in return.</p>
+    </div>
+
+    <div class="beat-art reveal">
+      <div class="postal-artifact" aria-hidden="true">
+        <svg viewBox="0 0 460 540" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <filter id="letter-noise">
+              <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" seed="3"/>
+              <feColorMatrix values="0 0 0 0 0.32 0 0 0 0 0.26 0 0 0 0 0.16 0 0 0 0.16 0"/>
+              <feComposite in2="SourceGraphic" operator="in"/>
+            </filter>
+            <linearGradient id="letter-shade" x1="0" y1="0" x2="0.6" y2="1">
+              <stop offset="0%" stop-color="#fbf3dc"/>
+              <stop offset="60%" stop-color="#f0e4c0"/>
+              <stop offset="100%" stop-color="#dec999"/>
+            </linearGradient>
+            <radialGradient id="wax-fill" cx="50%" cy="40%" r="60%">
+              <stop offset="0%" stop-color="#a8412c"/>
+              <stop offset="60%" stop-color="#7a2d1e"/>
+              <stop offset="100%" stop-color="#4a1810"/>
+            </radialGradient>
+            <radialGradient id="wax-shine" cx="35%" cy="30%" r="40%">
+              <stop offset="0%" stop-color="rgba(255,255,255,0.55)"/>
+              <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="230" cy="510" rx="190" ry="14" fill="rgba(20,14,8,0.22)"/>
+          <g transform="rotate(2 230 270)">
+            <rect x="52" y="120" width="356" height="300" rx="2" fill="url(#letter-shade)" stroke="rgba(80,55,28,0.4)" stroke-width="0.9"/>
+            <path d="M 52 120 L 230 250 L 408 120" fill="none" stroke="rgba(80,55,28,0.25)" stroke-width="0.8"/>
+            <path d="M 52 120 L 230 30 L 408 120 Z" fill="url(#letter-shade)" stroke="rgba(80,55,28,0.4)" stroke-width="0.9" opacity="0.92"/>
+            <path d="M 52 120 L 230 250 L 408 120" fill="rgba(80,55,28,0.06)"/>
+            <g fill="rgba(60,42,22,0.5)">
+              <rect x="160" y="280" width="140" height="2"/>
+              <rect x="170" y="296" width="120" height="2"/>
+              <rect x="175" y="312" width="110" height="2"/>
+            </g>
+            <rect x="340" y="260" width="42" height="52" fill="rgba(255,255,255,0.3)" stroke="rgba(80,55,28,0.2)" stroke-width="0.6" stroke-dasharray="2 1.5"/>
+            <text x="361" y="292" text-anchor="middle" font-family="IM Fell English, serif" font-style="italic" font-size="8" fill="rgba(80,55,28,0.5)">owl</text>
+            <text x="361" y="304" text-anchor="middle" font-family="IM Fell English, serif" font-style="italic" font-size="6" fill="rgba(80,55,28,0.4)">post</text>
+          </g>
+          <g>
+            <circle cx="230" cy="138" r="28" fill="url(#wax-fill)" stroke="rgba(40,12,6,0.5)" stroke-width="0.8"/>
+            <circle cx="230" cy="138" r="22" fill="none" stroke="rgba(255,200,160,0.15)" stroke-width="0.6"/>
+            <circle cx="230" cy="138" r="28" fill="url(#wax-shine)" opacity="0.5"/>
+            <circle cx="222" cy="133" r="4" fill="rgba(20,8,4,0.45)"/>
+            <circle cx="238" cy="133" r="4" fill="rgba(20,8,4,0.45)"/>
+            <circle cx="222" cy="132" r="1.5" fill="rgba(255,200,160,0.3)"/>
+            <circle cx="238" cy="132" r="1.5" fill="rgba(255,200,160,0.3)"/>
+            <path d="M 230 139 L 227 146 L 233 146 Z" fill="rgba(20,8,4,0.4)"/>
+            <path d="M 214 122 L 218 128 L 222 124" fill="none" stroke="rgba(20,8,4,0.3)" stroke-width="1"/>
+            <path d="M 246 122 L 242 128 L 238 124" fill="none" stroke="rgba(20,8,4,0.3)" stroke-width="1"/>
+          </g>
+          <rect x="0" y="0" width="460" height="540" filter="url(#letter-noise)" opacity="0.55"/>
+        </svg>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ======================================================
+     BEAT 6 — THE MOVEMENT (centered, full-screen, CTA)
+     ====================================================== -->
+<section class="story-beat story-beat--closing">
+  <div class="beat-inner reveal">
+    <h2 class="beat-title">Join us</h2>
+    <p class="beat-body"><em>I read therefore I am</em> This isn't just an app launch. It's a small movement back toward depth. Back toward the quiet thinking that makes a person. The scroll can wait. Reserve your seat.</p>
+    <div class="beat-cta-row">
+      <a href="#reserve" class="btn-ink">Reserve my seat — it's free <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+
+
+<!-- ======================================================
+     SECTION 4 — RESERVE A SEAT (two-tier)
+     ====================================================== -->
+<section class="reserve" id="reserve">
+  <div class="reserve-header">
+    <div class="reserve-mark" aria-hidden="true">O</div>
+    <p class="eyebrow">Reserve a Seat</p>
+    <h2>Two ways to enter <em>the Postoffice.</em></h2>
+    <p>Pick a free spot in the queue, or take a founding seat at opening night. Either way, the wax warms when it's your turn.</p>
+  </div>
+
+  <div class="tiers">
+
+    <!-- TIER 1 — FREE SEAT -->
+    <article class="tier tier-free reveal">
+      <div class="tier-head">
+        <h3>Free Seat</h3>
+        <p class="tier-tagline">A place in the queue.</p>
+        <p class="tier-price"><strong>Free</strong>, forever during beta.</p>
+      </div>
+      <div class="tier-divider"></div>
+      <ul class="benefits">
+        <li><strong>Your reader number,</strong> <span class="desc">kept on record and watched as it climbs.</span></li>
+        <li><strong>One month of free access</strong> <span class="desc">when the postoffice opens its doors.</span></li>
+        <li><strong>Owl Post sent only when you're ready</strong> <span class="desc">— no spam, no nudges, no marketing noise.</span></li>
+        <li><strong>A private referral link</strong> <span class="desc">to climb the queue with the friends you trust.</span></li>
+      </ul>
+      <p class="tier-meta"><strong>247 readers</strong> in the queue.</p>
+      <form class="tier-form" data-waitlist-form data-tier="free" novalidate>
+        <div class="tier-input-row">
+          <label class="sr-only" for="free-email">Email address</label>
+          <input id="free-email" name="email" type="email" placeholder="your.name@email.com" autocomplete="email" required>
+          <button type="submit">Reserve my seat → it's free</button>
+        </div>
+        <div class="tier-status" aria-live="polite">Reader <strong>#248</strong> is the next number on the ledger.</div>
+      </form>
+    </article>
+
+    <!-- TIER 2 — FOUNDING SEAT -->
+    <article class="tier tier-founding reveal">
+      <span class="tier-badge">143 Left</span>
+      <div class="tier-head">
+        <h3>Founding Seat</h3>
+        <p class="tier-tagline">A seat at opening night.</p>
+        <p class="tier-price"><strong>$7.97 once</strong> · <strong>$9.90/mo</strong> for life.</p>
+      </div>
+      <div class="tier-divider"></div>
+      <ul class="benefits">
+        <li><strong>Opening-night access</strong> <span class="desc">— write to Owlpo before anyone else.</span></li>
+        <li><strong>$9.90/mo locked for life,</strong> <span class="desc">no price hikes, ever, even after launch.</span></li>
+        <li><strong>Founding member badge</strong> <span class="desc">stamped on your Reading Identity.</span></li>
+        <li><strong>A vote on what we build next</strong> <span class="desc">— founding readers shape the postoffice.</span></li>
+      </ul>
+      <p class="tier-meta"><strong>200 founding seats</strong> · <strong>143 remain.</strong></p>
+      <form class="tier-form" data-waitlist-form data-tier="founding" novalidate>
+        <div class="tier-input-row">
+          <label class="sr-only" for="founding-email">Email address</label>
+          <input id="founding-email" name="email" type="email" placeholder="your.name@email.com" autocomplete="email" required>
+          <button type="submit">Become a founding member →</button>
+        </div>
+        <div class="tier-status" aria-live="polite">Seat <strong>#58</strong> is the next founding number.</div>
+      </form>
+    </article>
+
+  </div>
+</section>
+
+
+<!-- ======================================================
+     FAQ
+     ====================================================== -->
+<section class="faq" id="faq">
+  <div class="faq-header reveal">
+    <span class="faq-eyebrow">Questions & answers</span>
+    <h2 class="faq-title">Things people ask<br>before they join.</h2>
+  </div>
+
+  <ul class="faq-list">
+
+    <li class="faq-item reveal">
+      <details>
+        <summary>What exactly is Owlpo?<span class="faq-icon">+</span></summary>
+        <p class="faq-answer">Owlpo is a book discovery secretary — an app that helps you find the right book for your mood, moment, and ambition. Instead of endless browsing, you describe what you're looking for and Owlpo fetches it. Think of it as a personal librarian who actually knows you.</p>
+      </details>
+    </li>
+
+    <li class="faq-item reveal">
+      <details>
+        <summary>Is the free seat actually free?<span class="faq-icon">+</span></summary>
+        <p class="faq-answer">Yes. The free seat gives you access to Owlpo at launch with no payment required. Ever. You'll get discovery, previews, and a basic reading tracker — no credit card, no trial period, no catch. Founding seats are for those who want to lock in a lifetime rate and shape what we build.</p>
+      </details>
+    </li>
+
+    <li class="faq-item reveal">
+      <details>
+        <summary>When does Owlpo launch?<span class="faq-icon">+</span></summary>
+        <p class="faq-answer">We're not announcing a date yet — we'd rather get it right than get it out. Readers on the waitlist will be the first to know, and founding seat holders get access before anyone else. Sign up and we'll write to you when the postoffice opens.</p>
+      </details>
+    </li>
+
+    <li class="faq-item reveal">
+      <details>
+        <summary>How is this different from Goodreads or StoryGraph?<span class="faq-icon">+</span></summary>
+        <p class="faq-answer">Those are tracking and rating tools. Owlpo is a discovery tool — the focus is on finding your next book, not cataloguing what you've read. You can ask anything ("something quiet for a Sunday," "a book that will make me think differently about money") and Owlpo gives you a curated answer, not a list of 3,000 results.</p>
+      </details>
+    </li>
+
+    <li class="faq-item reveal">
+      <details>
+        <summary>What does a founding seat include?<span class="faq-icon">+</span></summary>
+        <p class="faq-answer">A $7.97 one-time payment locks in $9.90/mo for life — even after we raise prices post-launch. You also get opening-night access before the free tier, a founding member badge on your Reading Identity, and a vote on what we build next. There are only 200 founding seats, and they're going.</p>
+      </details>
+    </li>
+
+    <li class="faq-item reveal">
+      <details>
+        <summary>What happens to my data and my shelf?<span class="faq-icon">+</span></summary>
+        <p class="faq-answer">Your reading is yours. We don't sell your data, train models on your library, or share anything with third parties. Your shelf is private by default. We take the same view of your reading life as a good librarian: discreet, respectful, and entirely in your service.</p>
+      </details>
+    </li>
+
+    <li class="faq-item reveal">
+      <details>
+        <summary>I'm not a big reader. Is Owlpo for me?<span class="faq-icon">+</span></summary>
+        <p class="faq-answer">Especially yes. Owlpo is built for people who want to read more but don't know where to start — not people who already have a towering pile of books. If you finish one great book because Owlpo put it in your hands, that's a win. The postoffice is for the curious, not just the avid.</p>
+      </details>
+    </li>
+
+  </ul>
+</section>
+
+
+<!-- ======================================================
+     FOOTER
+     ====================================================== -->
+<footer class="footer">
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand">Owlpo</div>
+      <div class="footer-est">Est. 2025 · The Owl's Postoffice</div>
+    </div>
+    <div>
+      <p class="footer-quote">"A letter arrived. Wax still warm."</p>
+      <div class="footer-ornament">✦ ◆ ✦</div>
+    </div>
+    <div class="footer-links">
+      <a href="#">Twitter</a>
+      <a href="#">Instagram</a>
+      <a href="mailto:hello@owlpo.example">Email</a>
+    </div>
+  </div>
+  <p class="footer-privacy">
+    Your reading is yours. We don't sell your address, train on your shelf, or send anything you didn't ask for.
+  </p>
+</footer>
+
+
+<script>
+  // ============================================
+  // HERO PARALLAX (preserved)
+  // ============================================
+  const heroBg = document.getElementById('heroBg');
+  if (heroBg) {
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      if (y < window.innerHeight * 1.2) {
+        heroBg.style.transform = `translateY(${y * 0.35}px) scale(${1 + y * 0.0003})`;
+      }
+    }, { passive: true });
+  }
+
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const readerNumber = 247;
+
+
+  // ============================================
+  // FUNCTIONS DEMO — chat-style flow (4 tabs)
+  // ============================================
+  (function() {
+    const responses = {
+      'discover-1': {
+        type: 'book',
+        label: 'Tonight, before bed',
+        data: {
+          cover: { title: 'The Remains of the Day', author: 'KAZUO ISHIGURO', variant: 'navy' },
+          pickTag: "OWLPO'S PICK FOR TONIGHT",
+          title: 'The Remains of the Day',
+          author: 'Kazuo Ishiguro',
+          year: '1989',
+          reason: 'For the kind of grey, drizzling evening that asks you to sit still and remember something.'
+        },
+        gate: { prompt: "Want the Owl's full letter — <em>where, when, and why</em> this book is for you tonight?", cta: 'Send to my inbox' }
+      },
+      'discover-2': {
+        type: 'book',
+        label: 'Fresh morning, ready to start',
+        data: {
+          cover: { title: 'The War of Art', author: 'STEVEN PRESSFIELD', variant: 'burgundy' },
+          pickTag: "OWLPO'S PICK FOR THIS MORNING",
+          title: 'The War of Art',
+          author: 'Steven Pressfield',
+          year: '2002',
+          reason: 'For mornings when resistance is loud — a battle cry small enough to fit in your pocket.'
+        },
+        gate: { prompt: 'Get the <em>3 paragraphs</em> Pressfield wrote for mornings exactly like this one.', cta: 'Send to my inbox' }
+      },
+      'discover-3': {
+        type: 'book',
+        label: 'A slow Sunday afternoon',
+        data: {
+          cover: { title: 'A Gentleman in Moscow', author: 'AMOR TOWLES', variant: 'sage' },
+          pickTag: "OWLPO'S PICK FOR THIS AFTERNOON",
+          title: 'A Gentleman in Moscow',
+          author: 'Amor Towles',
+          year: '2016',
+          reason: 'For an afternoon that wants to feel slow and European — a hotel, a count, and decades inside one beautiful room.'
+        },
+        gate: { prompt: 'Want the <em>opening pages</em> delivered — so you can decide if Sunday wants this book?', cta: 'Send to my inbox' }
+      },
+      'ask-1': {
+        type: 'book-excerpt',
+        label: 'How do I stop overthinking everything?',
+        data: {
+          cover: { title: 'The Untethered Soul', author: 'MICHAEL SINGER', variant: 'navy' },
+          pickTag: 'THE BOOK WITH YOUR ANSWER',
+          title: 'The Untethered Soul',
+          author: 'Michael A. Singer',
+          year: '2007',
+          reason: 'Singer spent decades sitting with the voice in his own head. This book is the field notes.',
+          excerpt: { location: 'Chapter 1 · Page 8', text: "There is nothing more important to true growth than realizing that you are not the voice of the mind — you are the one who hears it. If you don't understand this, you will try to figure out which of the many things the voice says is really you..." }
+        },
+        gate: { prompt: 'Read <em>the full passage</em> + one more chosen specifically for your question.', cta: 'Send to my inbox' }
+      },
+      'ask-2': {
+        type: 'book-excerpt',
+        label: 'Should I leave a stable job to chase something?',
+        data: {
+          cover: { title: 'The Pathless Path', author: 'PAUL MILLERD', variant: 'burgundy' },
+          pickTag: 'THE BOOK WITH YOUR ANSWER',
+          title: 'The Pathless Path',
+          author: 'Paul Millerd',
+          year: '2022',
+          reason: 'Millerd left McKinsey at 31. The chapter on "the default path" is where most readers stop and email a friend.',
+          excerpt: { location: 'Chapter 3 · Page 47', text: "The default path works until it doesn't. And the strange thing about it is that the longer you walk it, the harder it becomes to see that you're on a path at all — that there might be other paths, that you might be allowed to step off..." }
+        },
+        gate: { prompt: 'Get <em>Chapter 3 in full</em> — the chapter that breaks the spell.', cta: 'Send to my inbox' }
+      },
+      'ask-3': {
+        type: 'book-excerpt',
+        label: 'Why do I keep dating the same person?',
+        data: {
+          cover: { title: 'Attached', author: 'LEVINE & HELLER', variant: 'sage' },
+          pickTag: 'THE BOOK WITH YOUR ANSWER',
+          title: 'Attached',
+          author: 'Amir Levine & Rachel Heller',
+          year: '2010',
+          reason: "Three attachment styles. One uncomfortable mirror. The pattern you keep repeating has a name — and it's in here.",
+          excerpt: { location: 'Chapter 2 · Page 21', text: "Anxious people are often preoccupied with their relationships and tend to worry about their partner's ability to love them back. Avoidant people equate intimacy with a loss of independence. When these two styles meet..." }
+        },
+        gate: { prompt: 'Take the <em>10-question quiz</em> from the book — find out which style describes you.', cta: 'Send to my inbox' }
+      },
+      'skip-1': {
+        type: 'chapters',
+        label: 'Atomic Habits — for chronic restarters',
+        data: {
+          bookTitle: 'Atomic Habits',
+          bookAuthor: 'James Clear',
+          chapters: [
+            { num: 'CHAPTER 4', title: 'The Habits Scorecard', snippet: "Why you keep restarting: you've been trying to add habits without first making the invisible visible. Clear walks you through a 10-minute audit that...", unlocked: true },
+            { num: 'CHAPTER 13', title: 'How to Stop Procrastinating Using the Two-Minute Rule', snippet: 'The two-minute rule reframes the entire problem of starting...', unlocked: false },
+            { num: 'CHAPTER 18', title: 'The Truth About Talent (Genes vs. Hard Work)', snippet: "Most chronic restarters quit because they're fighting their nature...", unlocked: false }
+          ]
+        },
+        gate: { prompt: 'Unlock <em>your full personalized preview</em> — three chapters, written for chronic restarters.', cta: 'Send to my inbox' }
+      },
+      'skip-2': {
+        type: 'chapters',
+        label: 'Psychology of Money — for a college student',
+        data: {
+          bookTitle: 'The Psychology of Money',
+          bookAuthor: 'Morgan Housel',
+          chapters: [
+            { num: 'CHAPTER 1', title: "No One's Crazy", snippet: "Why your roommate's relationship with money is completely different from yours — and why both make sense. Housel opens with...", unlocked: true },
+            { num: 'CHAPTER 7', title: 'Freedom (The Highest Form of Wealth)', snippet: 'The single most valuable thing money can buy is something most people miss until their forties...', unlocked: false },
+            { num: 'CHAPTER 20', title: 'Confessions', snippet: 'Housel admits the gap between knowing and doing — and what he actually does with his own money...', unlocked: false }
+          ]
+        },
+        gate: { prompt: 'Unlock <em>your full personalized preview</em> — three chapters, written for someone starting out.', cta: 'Send to my inbox' }
+      },
+      'skip-3': {
+        type: 'chapters',
+        label: 'Sapiens — for an early-stage founder',
+        data: {
+          bookTitle: 'Sapiens',
+          bookAuthor: 'Yuval Noah Harari',
+          chapters: [
+            { num: 'CHAPTER 2', title: 'The Tree of Knowledge', snippet: 'Why humans cooperate at scale: shared fictions. For a founder, this chapter is a masterclass in why your origin story matters more than your product...', unlocked: true },
+            { num: 'CHAPTER 8', title: 'There Is No Justice in History', snippet: "On hierarchies and how they form — useful for anyone designing a company's first culture...", unlocked: false },
+            { num: 'CHAPTER 16', title: 'The Capitalist Creed', snippet: 'How the engine of growth actually works — and where it tends to break...', unlocked: false }
+          ]
+        },
+        gate: { prompt: 'Unlock <em>your full personalized preview</em> — three chapters, written for early-stage founders.', cta: 'Send to my inbox' }
+      }
+    };
+
+    const identityDefault = {
+      title: 'The Quiet Strategist',
+      traits: [
+        { label: 'Curious about systems', pct: 73 },
+        { label: 'Drawn to ancient wisdom', pct: 64 },
+        { label: 'Building inward', pct: 58 }
+      ],
+      stats: { books: 12, streak: '4 mo' }
+    };
+
+    function pickProfile(selectedBooks) {
+      const has = (id) => selectedBooks.includes(id);
+      if (has('tao') && has('meditations')) {
+        return { title: 'The Quiet Stoic', traits: [{ label: 'Drawn to ancient wisdom', pct: 82 }, { label: 'Practicing self-mastery', pct: 71 }, { label: 'Building inward', pct: 64 }], stats: { books: 14, streak: '5 mo' } };
+      }
+      if (has('atomic') && has('4hww')) {
+        return { title: 'The Quiet Operator', traits: [{ label: 'Building habits that compound', pct: 78 }, { label: 'Optimizing for leverage', pct: 67 }, { label: 'Skeptical of busyness', pct: 59 }], stats: { books: 11, streak: '3 mo' } };
+      }
+      if (has('sapiens') && has('alchemist')) {
+        return { title: 'The Pattern Seeker', traits: [{ label: 'Tracing the long arc of things', pct: 76 }, { label: 'Open to the unexplained', pct: 62 }, { label: 'Curious about systems', pct: 58 }], stats: { books: 13, streak: '4 mo' } };
+      }
+      return identityDefault;
+    }
+
+    // ====== Tab switching ======
+    const tabs = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.tab;
+        tabs.forEach(t => t.setAttribute('aria-selected', t === tab ? 'true' : 'false'));
+        tabPanels.forEach(p => p.classList.toggle('active', p.dataset.panel === target));
+      });
+    });
+
+    // ====== Helpers ======
+    function escapeHtml(str) {
+      if (typeof str !== 'string') return '';
+      return str.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function typingHTML() {
+      return `<div class="typing"><div class="owl-avatar">✦</div><div class="typing-dots"><span></span><span></span><span></span></div></div>`;
+    }
+    function bookCardHTML(book) {
+      const variantClass = book.cover.variant === 'burgundy' ? 'cover-burgundy' : book.cover.variant === 'sage' ? 'cover-sage' : '';
+      return `<div class="book-card"><div class="book-cover ${variantClass}"><div class="bc-title">${escapeHtml(book.cover.title)}</div><div><div class="bc-divider"></div><div class="bc-author">${escapeHtml(book.cover.author)}</div></div></div><div class="book-meta"><span class="book-pick-tag">${escapeHtml(book.pickTag)}</span><h4 class="book-title">${escapeHtml(book.title)}</h4><div class="book-author">${escapeHtml(book.author)}<span class="year">· ${escapeHtml(book.year)}</span></div><p class="book-reason">${escapeHtml(book.reason)}</p></div></div>`;
+    }
+    function excerptHTML(excerpt) {
+      return `<div class="excerpt-block"><div class="excerpt-label">${escapeHtml(excerpt.location)}</div><div class="excerpt-text excerpt-fade">${escapeHtml(excerpt.text)}</div></div>`;
+    }
+    function chaptersHTML(data) {
+      return `<div class="book-card"><div class="book-cover"><div class="bc-title">${escapeHtml(data.bookTitle)}</div><div><div class="bc-divider"></div><div class="bc-author">${escapeHtml(data.bookAuthor.toUpperCase())}</div></div></div><div class="book-meta"><span class="book-pick-tag">YOUR PERSONALIZED PREVIEW</span><h4 class="book-title">${escapeHtml(data.bookTitle)}</h4><div class="book-author">${escapeHtml(data.bookAuthor)}</div><p class="book-reason">3 chapters pulled from the book — only the parts that matter for your question.</p></div></div><div class="chapter-list">${data.chapters.map(ch => `<div class="chapter-row ${ch.unlocked ? 'unlocked' : 'locked'}"><div class="chapter-icon">${ch.unlocked ? '✓' : '🔒'}</div><div class="chapter-content"><div class="chapter-num">${escapeHtml(ch.num)}</div><div class="chapter-title">${escapeHtml(ch.title)}</div><div class="chapter-snippet">${escapeHtml(ch.snippet)}</div></div></div>`).join('')}</div>`;
+    }
+    function gateHTML(gate) {
+      return `<form class="gate" data-gate-form><div class="gate-tag">A letter is waiting</div><p class="gate-prompt">${gate.prompt}</p><div class="gate-form-row"><input type="email" class="gate-input" placeholder="your email address" required autocomplete="email"><button type="submit" class="gate-submit">${escapeHtml(gate.cta)} →</button></div><div class="gate-meta">No spam · One letter, then nothing until you say so</div></form>`;
+    }
+    function successHTML() {
+      return `<div class="success-state"><div class="success-seal">✦</div><h3 class="success-title">Your <em>letter</em> is on its way</h3><p class="success-msg">The Owl is writing now. Your full answer arrives in <strong>about 2 minutes</strong> — check your inbox (and the promotions folder, just in case).</p><button type="button" class="success-restart" data-restart>Try another question →</button></div>`;
+    }
+
+    // ====== Chip / response flow ======
+    function handleChipResponse(demoEl, responseKey) {
+      const body = demoEl.querySelector('[data-demo-body]');
+      const r = responses[responseKey];
+      if (!r) return;
+      body.innerHTML = `<div class="owl-prompt"><div class="owl-avatar">✦</div><div class="owl-bubble">Reading your moment <span class="sparkle">✦</span></div></div><div class="user-message">${escapeHtml(r.label)}</div>${typingHTML()}`;
+      setTimeout(() => {
+        let responseContent = '';
+        if (r.type === 'book') responseContent = bookCardHTML(r.data);
+        else if (r.type === 'book-excerpt') responseContent = bookCardHTML(r.data) + excerptHTML(r.data.excerpt);
+        else if (r.type === 'chapters') responseContent = chaptersHTML(r.data);
+        body.innerHTML = `<div class="owl-prompt"><div class="owl-avatar">✦</div><div class="owl-bubble">Here's what I found for you <span class="sparkle">✦</span></div></div><div class="user-message">${escapeHtml(r.label)}</div><div class="response-area">${responseContent}</div>${gateHTML(r.gate)}`;
+        attachGateHandler(demoEl);
+      }, 1100);
+    }
+
+    // ====== Identity flow ======
+    function handleIdentityFlow(demoEl) {
+      const counter = demoEl.querySelector('[data-pick-counter]');
+      const picks = demoEl.querySelectorAll('.book-pick');
+      const selected = new Set();
+      picks.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.book;
+          if (btn.classList.contains('selected')) {
+            btn.classList.remove('selected');
+            selected.delete(id);
+          } else if (selected.size < 3) {
+            btn.classList.add('selected');
+            selected.add(id);
+          }
+          const remaining = 3 - selected.size;
+          if (remaining > 0) counter.textContent = `Pick ${remaining} more`;
+          else {
+            counter.textContent = 'Reading you...';
+            picks.forEach(p => { if (!p.classList.contains('selected')) p.disabled = true; });
+            setTimeout(() => renderIdentity(demoEl, Array.from(selected)), 900);
+          }
+        });
+      });
+    }
+
+    function renderIdentity(demoEl, selectedBooks) {
+      const body = demoEl.querySelector('[data-demo-body]');
+      const profile = pickProfile(selectedBooks);
+      body.innerHTML = `<div class="owl-prompt"><div class="owl-avatar">✦</div><div class="owl-bubble">Here's the reader you're becoming <span class="sparkle">✦</span></div></div><div class="response-area"><div class="identity-card gated"><div class="identity-eyebrow">Your Reading Identity · Preview</div><h4 class="identity-title">${escapeHtml(profile.title)}</h4><div class="identity-traits">${profile.traits.map(t => `<div class="trait-row"><span class="trait-label">${escapeHtml(t.label)}</span><span class="trait-bar-wrap"><span class="trait-bar" data-pct="${t.pct}"></span></span><span class="trait-pct">${t.pct}%</span></div>`).join('')}</div><div class="identity-stat-row"><div class="identity-stat"><div class="identity-stat-num">${escapeHtml(String(profile.stats.books))}</div><div class="identity-stat-label">Books read</div></div><div class="identity-stat"><div class="identity-stat-num">${escapeHtml(profile.stats.streak)}</div><div class="identity-stat-label">Reading streak</div></div><div class="identity-stat"><div class="identity-stat-num">·····</div><div class="identity-stat-label">Top genre</div></div></div></div></div>${gateHTML({ prompt: 'Get your <em>full Reading Identity</em> card — top genres, hidden patterns, and a shareable image.', cta: 'Send to my inbox' })}`;
+      requestAnimationFrame(() => {
+        body.querySelectorAll('.trait-bar').forEach(bar => { bar.style.width = bar.dataset.pct + '%'; });
+      });
+      attachGateHandler(demoEl);
+    }
+
+    // ====== Email gate ======
+    function attachGateHandler(demoEl) {
+      const form = demoEl.querySelector('[data-gate-form]');
+      if (!form) return;
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        const input = form.querySelector('.gate-input');
+        const email = input.value.trim();
+        if (!email || !email.includes('@')) {
+          input.focus();
+          input.style.borderColor = 'var(--wax)';
+          return;
+        }
+        const body = demoEl.querySelector('[data-demo-body]');
+        const gate = body.querySelector('.gate');
+        if (gate) gate.remove();
+        body.insertAdjacentHTML('beforeend', successHTML());
+        const restart = body.querySelector('[data-restart]');
+        if (restart) restart.addEventListener('click', () => resetDemo(demoEl));
+      });
+    }
+
+    // ====== Reset (chat demos only — discover/ask/skip) ======
+    const chatDemos = document.querySelectorAll('[data-demo="discover"], [data-demo="ask"], [data-demo="skip"]');
+    const initialStates = {};
+    chatDemos.forEach(demoEl => {
+      const body = demoEl.querySelector('[data-demo-body]');
+      if (body) initialStates[demoEl.dataset.demo] = body.innerHTML;
+    });
+    function resetDemo(demoEl) {
+      const initial = initialStates[demoEl.dataset.demo];
+      if (initial) {
+        demoEl.querySelector('[data-demo-body]').innerHTML = initial;
+        attachInitialHandlers(demoEl);
+      }
+    }
+    function attachInitialHandlers(demoEl) {
+      demoEl.querySelectorAll('[data-chips] .chip').forEach(chip => {
+        chip.addEventListener('click', () => handleChipResponse(demoEl, chip.dataset.response));
+      });
+    }
+    chatDemos.forEach(attachInitialHandlers);
+  })();
+
+
+  // ============================================
+  // TRACKER (Tab IV — Become Sharper, nostalgic)
+  // ============================================
+  (function() {
+    const trackerAxes = [
+      { x: 160, y: 38 }, { x: 257, y: 94 }, { x: 257, y: 206 },
+      { x: 160, y: 262 }, { x: 63, y: 206 }, { x: 63, y: 94 }
+    ];
+    const trackerCenter = { x: 160, y: 150 };
+
+    const trackerTiers = [
+      {
+        name: 'Owl Apprentice',
+        books: '5 books logged',
+        score: '32%',
+        exp: 32,
+        values: [26, 42, 18, 31, 68, 76],
+        dimensions: ['Health 26%', 'Relationship 42%', 'Investing 18%', 'Career 31%', 'Mindset 68%', 'Literature 76%'],
+        activeIndex: 5,
+        tierLabel: 'tier I',
+        palette: {
+          '--tracker-accent': '#4a5e3a',
+          '--tracker-accent-strong': '#2f3d26',
+          '--tracker-area': 'rgba(74, 94, 58, 0.34)',
+          '--tracker-stroke': 'rgba(47, 61, 38, 0.82)',
+          '--tracker-label': 'rgba(58, 48, 30, 0.76)'
+        }
+      },
+      {
+        name: 'Owl Editor',
+        books: '18 books logged',
+        score: '61%',
+        exp: 61,
+        values: [48, 62, 44, 56, 78, 82],
+        dimensions: ['Health 48%', 'Relationship 62%', 'Investing 44%', 'Career 56%', 'Mindset 78%', 'Literature 82%'],
+        activeIndex: 5,
+        tierLabel: 'tier II',
+        palette: {
+          '--tracker-accent': '#3d5a72',
+          '--tracker-accent-strong': '#22394d',
+          '--tracker-area': 'rgba(61, 90, 114, 0.34)',
+          '--tracker-stroke': 'rgba(34, 57, 77, 0.82)',
+          '--tracker-label': 'rgba(58, 48, 30, 0.78)'
+        }
+      },
+      {
+        name: 'Legendary Director',
+        books: '42 books logged',
+        score: '88%',
+        exp: 88,
+        values: [78, 82, 76, 84, 92, 88],
+        dimensions: ['Health 78%', 'Relationship 82%', 'Investing 76%', 'Career 84%', 'Mindset 92%', 'Literature 88%'],
+        activeIndex: 4,
+        tierLabel: 'tier III',
+        palette: {
+          '--tracker-accent': '#a88654',
+          '--tracker-accent-strong': '#604828',
+          '--tracker-area': 'rgba(168, 134, 84, 0.34)',
+          '--tracker-stroke': 'rgba(96, 72, 40, 0.82)',
+          '--tracker-label': 'rgba(58, 48, 30, 0.82)'
+        }
+      }
+    ];
+
+    function buildAreaPoints(values) {
+      return values.map((v, i) => {
+        const ratio = v / 100;
+        const ax = trackerAxes[i];
+        const x = trackerCenter.x + (ax.x - trackerCenter.x) * ratio;
+        const y = trackerCenter.y + (ax.y - trackerCenter.y) * ratio;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(' ');
+    }
+
+    function initGrowthTracker() {
+      const demo = document.querySelector('.tracker-demo[data-demo="tracker"]');
+      if (!demo) return;
+
+      const radarArea = demo.querySelector('.radar-area');
+      const tierBtns = demo.querySelectorAll('[data-tracker-tier]');
+      const expFill = demo.querySelector('.tracker-exp-fill');
+      const numEl = demo.querySelector('.tracker-number');
+      const kickerEl = demo.querySelector('.card-kicker');
+      const expBar = demo.querySelector('.tracker-exp');
+      const labelTier = demo.querySelector('.seal-tag');
+      const readerSpans = demo.querySelectorAll('.reader-list span');
+
+      let activeIndex = 0;
+      let loopTimer = null;
+      const cycleDelay = 5200;
+      const resumeDelay = 6800;
+
+      function showTier(index, opts = {}) {
+        const idx = ((index % trackerTiers.length) + trackerTiers.length) % trackerTiers.length;
+        const tier = trackerTiers[idx];
+        activeIndex = idx;
+
+        Object.entries(tier.palette).forEach(([k, v]) => demo.style.setProperty(k, v));
+        demo.style.setProperty('--tracker-exp', tier.exp + '%');
+        if (radarArea) radarArea.setAttribute('points', buildAreaPoints(tier.values));
+        if (numEl) numEl.textContent = tier.score;
+        if (kickerEl) kickerEl.textContent = tier.books;
+        if (labelTier) labelTier.textContent = tier.tierLabel;
+        if (expBar) expBar.setAttribute('aria-valuenow', tier.exp);
+
+        tierBtns.forEach((btn, i) => {
+          const isActive = i === idx;
+          btn.classList.toggle('active', isActive);
+          btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+        readerSpans.forEach((span, i) => {
+          span.classList.toggle('active', i === tier.activeIndex);
+          span.textContent = tier.dimensions[i];
+        });
+      }
+
+      function startLoop(delay = cycleDelay) {
+        clearTimeout(loopTimer);
+        loopTimer = setTimeout(() => {
+          showTier(activeIndex + 1);
+          startLoop();
+        }, delay);
+      }
+
+      tierBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          showTier(Number(btn.dataset.trackerTier));
+          startLoop(resumeDelay);
+        });
+      });
+
+      showTier(0);
+      startLoop();
+    }
+    initGrowthTracker();
+  })();
+
+
+  // ============================================
+  // WAITLIST FORMS (both tiers)
+  // ============================================
+  document.querySelectorAll('[data-waitlist-form]').forEach((form) => {
+    const email = form.querySelector('input[type="email"]');
+    const status = form.querySelector('.tier-status');
+    const tier = form.dataset.tier;
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      status.classList.remove('success', 'error');
+      if (!email.value.trim() || !email.checkValidity()) {
+        status.textContent = 'Please enter a valid email so the dispatch knows where to fly.';
+        status.classList.add('error');
+        email.focus();
+        return;
+      }
+      const successMessage = tier === 'founding'
+        ? `Founding seat held for you. The wax will be warm when we open.`
+        : `Reader #${readerNumber + 1} — your dispatch is being composed. Owlpo will write when it's time.`;
+      status.innerHTML = successMessage;
+      status.classList.add('success');
+    });
+  });
+
+  // ============================================
+  // SCROLL REVEAL
+  // ============================================
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
