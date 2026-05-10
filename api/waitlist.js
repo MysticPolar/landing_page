@@ -1,4 +1,86 @@
-const { createClient } = require('@supabase/supabase-js')
+/**
+ * Waitlist signup via Supabase PostgREST.
+ * Supports both legacy JWT `service_role` and new `sb_secret_...` keys
+ * (supabase-js createClient() does not work with sb_secret keys alone).
+ */
+
+function normalizeSupabaseUrl(raw) {
+  if (!raw) return ''
+  let u = String(raw).trim().replace(/\/$/, '')
+  u = u.replace(/\/rest\/v1\/?$/, '')
+  return u
+}
+
+function authHeaders(key) {
+  return {
+    apikey: key,
+    Authorization: `Bearer ${key}`,
+    'Content-Type': 'application/json',
+  }
+}
+
+async function parseErrorBody(res) {
+  const text = await res.text()
+  let code
+  let message
+  try {
+    const j = JSON.parse(text)
+    code = j.code
+    message = j.message || j.error_description || j.msg
+  } catch {
+    message = text
+  }
+  return { code, message, status: res.status }
+}
+
+async function insertSignup(baseUrl, key, row) {
+  const res = await fetch(`${baseUrl}/rest/v1/waitlist_signups`, {
+    method: 'POST',
+    headers: {
+      ...authHeaders(key),
+      Prefer: 'return=minimal',
+    },
+    body: JSON.stringify(row),
+  })
+  if (res.ok) return { ok: true }
+  const err = await parseErrorBody(res)
+  return { ok: false, ...err }
+}
+
+async function updateSignup(baseUrl, key, email, patch) {
+  const res = await fetch(
+    `${baseUrl}/rest/v1/waitlist_signups?email=eq.${encodeURIComponent(email)}`,
+    {
+      method: 'PATCH',
+      headers: {
+        ...authHeaders(key),
+        Prefer: 'return=minimal',
+      },
+      body: JSON.stringify(patch),
+    }
+  )
+  if (res.ok) return { ok: true }
+  const err = await parseErrorBody(res)
+  return { ok: false, ...err }
+}
+
+async function countSignups(baseUrl, key) {
+  const res = await fetch(
+    `${baseUrl}/rest/v1/waitlist_signups?select=id`,
+    {
+      method: 'HEAD',
+      headers: {
+        apikey: key,
+        Authorization: `Bearer ${key}`,
+        Prefer: 'count=exact',
+      },
+    }
+  )
+  const cr = res.headers.get('content-range')
+  if (!cr) return null
+  const m = cr.match(/\/(\d+)\s*$/)
+  return m ? parseInt(m[1], 10) : null
+}
 
 function badRequest(res, message) {
   res.status(400).json({ error: message })
@@ -38,44 +120,47 @@ module.exports = async (req, res) => {
     return badRequest(res, 'Missing tier.')
   }
 
-  const url = process.env.SUPABASE_URL
+  const rawUrl = process.env.SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
-  if (!url || !key) {
+  if (!rawUrl || !key) {
     console.error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY')
     return res.status(500).json({ error: 'Server is not configured.' })
   }
 
-  const supabase = createClient(url, key)
+  const baseUrl = normalizeSupabaseUrl(rawUrl)
+  if (!/^https:\/\//i.test(baseUrl)) {
+    console.error('SUPABASE_URL must start with https://', baseUrl)
+    return res.status(500).json({ error: 'Server is not configured.' })
+  }
 
   const row = { email, tier, source }
-  let { error } = await supabase.from('waitlist_signups').insert(row)
 
-  if (error?.code === '23505') {
+  let ins = await insertSignup(baseUrl, key, row)
+
+  if (!ins.ok && (ins.code === '23505' || ins.status === 409)) {
     if (source === 'waitlist') {
-      const { error: upErr } = await supabase
-        .from('waitlist_signups')
-        .update({ tier, source: 'waitlist' })
-        .eq('email', email)
-      if (upErr) {
-        console.error(upErr)
+      const up = await updateSignup(baseUrl, key, email, {
+        tier,
+        source: 'waitlist',
+      })
+      if (!up.ok) {
+        console.error('waitlist update after duplicate', up)
         return res
           .status(500)
           .json({ error: 'Could not save your signup. Please try again.' })
       }
     }
-    error = null
+    ins = { ok: true }
   }
 
-  if (error) {
-    console.error(error)
+  if (!ins.ok) {
+    console.error('waitlist insert error', ins)
     return res
       .status(500)
       .json({ error: 'Could not save your signup. Please try again.' })
   }
 
-  const { count } = await supabase
-    .from('waitlist_signups')
-    .select('*', { count: 'exact', head: true })
+  const totalReaders = await countSignups(baseUrl, key)
 
-  return res.status(200).json({ ok: true, totalReaders: count })
+  return res.status(200).json({ ok: true, totalReaders })
 }
