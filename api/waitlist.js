@@ -1,23 +1,9 @@
 /**
  * Waitlist signup via Supabase PostgREST.
- * Supports both legacy JWT `service_role` and new `sb_secret_...` keys
- * (supabase-js createClient() does not work with sb_secret keys alone).
+ * Optional invite codes validated against public.invitation_codes.
  */
 
-function normalizeSupabaseUrl(raw) {
-  if (!raw) return ''
-  let u = String(raw).trim().replace(/\/$/, '')
-  u = u.replace(/\/rest\/v1\/?$/, '')
-  return u
-}
-
-function authHeaders(key) {
-  return {
-    apikey: key,
-    Authorization: `Bearer ${key}`,
-    'Content-Type': 'application/json',
-  }
-}
+const { normalizeSupabaseUrl, authHeaders } = require('../lib/supabase-rest')
 
 async function parseErrorBody(res) {
   const text = await res.text()
@@ -31,6 +17,52 @@ async function parseErrorBody(res) {
     message = text
   }
   return { code, message, status: res.status }
+}
+
+function normalizeInvite(raw) {
+  if (raw == null || String(raw).trim() === '') return ''
+  return String(raw).trim().toUpperCase()
+}
+
+async function fetchInviteRow(baseUrl, key, codeUpper) {
+  const res = await fetch(
+    `${baseUrl}/rest/v1/invitation_codes?code=eq.${encodeURIComponent(
+      codeUpper
+    )}&select=id,max_uses,uses_count,expires_at,active`,
+    { headers: { apikey: key, Authorization: `Bearer ${key}` } }
+  )
+  if (!res.ok) return null
+  const rows = await res.json()
+  return rows[0] || null
+}
+
+async function validateInvite(baseUrl, key, rawInvite) {
+  const code = normalizeInvite(rawInvite)
+  if (!code) return { ok: true, code: '', row: null }
+
+  const row = await fetchInviteRow(baseUrl, key, code)
+  if (!row || !row.active) {
+    return { ok: false, error: 'That invitation code is not valid.' }
+  }
+  if (row.expires_at && Date.parse(row.expires_at) < Date.now()) {
+    return { ok: false, error: 'That invitation code has expired.' }
+  }
+  if (row.max_uses != null && row.uses_count >= row.max_uses) {
+    return { ok: false, error: 'That invitation code has already been used.' }
+  }
+  return { ok: true, code, row }
+}
+
+async function fetchSignupByEmail(baseUrl, key, email) {
+  const res = await fetch(
+    `${baseUrl}/rest/v1/waitlist_signups?email=eq.${encodeURIComponent(
+      email
+    )}&select=invite_code`,
+    { headers: { apikey: key, Authorization: `Bearer ${key}` } }
+  )
+  if (!res.ok) return null
+  const rows = await res.json()
+  return rows[0] || null
 }
 
 async function insertSignup(baseUrl, key, row) {
@@ -64,18 +96,31 @@ async function updateSignup(baseUrl, key, email, patch) {
   return { ok: false, ...err }
 }
 
-async function countSignups(baseUrl, key) {
+async function bumpInviteUses(baseUrl, key, row) {
+  const next = row.uses_count + 1
   const res = await fetch(
-    `${baseUrl}/rest/v1/waitlist_signups?select=id`,
+    `${baseUrl}/rest/v1/invitation_codes?id=eq.${encodeURIComponent(row.id)}`,
     {
-      method: 'HEAD',
+      method: 'PATCH',
       headers: {
-        apikey: key,
-        Authorization: `Bearer ${key}`,
-        Prefer: 'count=exact',
+        ...authHeaders(key),
+        Prefer: 'return=minimal',
       },
+      body: JSON.stringify({ uses_count: next }),
     }
   )
+  return res.ok
+}
+
+async function countSignups(baseUrl, key) {
+  const res = await fetch(`${baseUrl}/rest/v1/waitlist_signups?select=id`, {
+    method: 'HEAD',
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+      Prefer: 'count=exact',
+    },
+  })
   const cr = res.headers.get('content-range')
   if (!cr) return null
   const m = cr.match(/\/(\d+)\s*$/)
@@ -133,24 +178,38 @@ module.exports = async (req, res) => {
     return res.status(500).json({ error: 'Server is not configured.' })
   }
 
-  const row = { email, tier, source }
+  const inv = await validateInvite(baseUrl, key, body.inviteCode)
+  if (!inv.ok) return badRequest(res, inv.error)
+
+  const inviteStored = inv.code || null
+  const row = { email, tier, source, invite_code: inviteStored }
 
   let ins = await insertSignup(baseUrl, key, row)
+  let wasNewSignup = ins.ok
 
   if (!ins.ok && (ins.code === '23505' || ins.status === 409)) {
     if (source === 'waitlist') {
-      const up = await updateSignup(baseUrl, key, email, {
-        tier,
-        source: 'waitlist',
-      })
+      const existing = await fetchSignupByEmail(baseUrl, key, email)
+      const patch = { tier, source: 'waitlist' }
+      if (inviteStored) patch.invite_code = inviteStored
+      const up = await updateSignup(baseUrl, key, email, patch)
       if (!up.ok) {
         console.error('waitlist update after duplicate', up)
         return res
           .status(500)
           .json({ error: 'Could not save your signup. Please try again.' })
       }
+      ins = { ok: true }
+      wasNewSignup = false
+
+      if (inviteStored && existing && !existing.invite_code) {
+        const fresh = await fetchInviteRow(baseUrl, key, inviteStored)
+        if (fresh) await bumpInviteUses(baseUrl, key, fresh)
+      }
+    } else if (source === 'identity_gate') {
+      ins = { ok: true }
+      wasNewSignup = false
     }
-    ins = { ok: true }
   }
 
   if (!ins.ok) {
@@ -158,6 +217,10 @@ module.exports = async (req, res) => {
     return res
       .status(500)
       .json({ error: 'Could not save your signup. Please try again.' })
+  }
+
+  if (wasNewSignup && inv.row) {
+    await bumpInviteUses(baseUrl, key, inv.row)
   }
 
   const totalReaders = await countSignups(baseUrl, key)

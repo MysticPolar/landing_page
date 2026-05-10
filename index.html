@@ -2438,6 +2438,31 @@
     background: var(--gold);
     color: var(--ink);
   }
+
+  .tier-invite-row {
+    margin-top: 0.65rem;
+    border: 1px solid rgba(85, 65, 34, 0.22);
+    background: rgba(255, 255, 255, 0.45);
+  }
+  .tier-invite-row input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    padding: 0.55rem 0.85rem;
+    color: var(--ink);
+    font-family: 'DM Mono', ui-monospace, monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .tier-invite-row input::placeholder {
+    color: rgba(94, 78, 52, 0.45);
+    font-style: italic;
+    font-family: 'Crimson Pro', serif;
+    letter-spacing: 0;
+    text-transform: none;
+  }
   .tier-status {
     min-height: 1.2rem;
     margin-top: 0.65rem;
@@ -3989,6 +4014,10 @@
           <input id="free-email" name="email" type="email" placeholder="your.name@email.com" autocomplete="email" required>
           <button type="submit">Reserve my seat → it's free</button>
         </div>
+        <div class="tier-invite-row">
+          <label class="sr-only" for="free-invite">Invitation code (optional)</label>
+          <input id="free-invite" name="inviteCode" type="text" data-invite-code inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Invitation code (optional)" maxlength="48">
+        </div>
         <div class="tier-status" aria-live="polite">Reader <strong>#248</strong> is the next number on the ledger.</div>
       </form>
     </article>
@@ -4014,6 +4043,10 @@
           <label class="sr-only" for="founding-email">Email address</label>
           <input id="founding-email" name="email" type="email" placeholder="your.name@email.com" autocomplete="email" required>
           <button type="submit">Become a founding member →</button>
+        </div>
+        <div class="tier-invite-row">
+          <label class="sr-only" for="founding-invite">Invitation code (optional)</label>
+          <input id="founding-invite" name="inviteCode" type="text" data-invite-code inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Invitation code (optional)" maxlength="48">
         </div>
         <div class="tier-status" aria-live="polite">Seat <strong>#58</strong> is the next founding number.</div>
       </form>
@@ -4116,15 +4149,19 @@
 
 
 <script>
-  async function submitLead({ email, tier, source }) {
+  async function submitLead({ email, tier, source, inviteCode }) {
+    const payload = {
+      email,
+      tier: tier == null ? null : tier,
+      source: source || 'waitlist',
+    };
+    if (inviteCode != null && String(inviteCode).trim() !== '') {
+      payload.inviteCode = String(inviteCode).trim();
+    }
     const res = await fetch('/api/waitlist', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email,
-        tier: tier == null ? null : tier,
-        source: source || 'waitlist',
-      }),
+      body: JSON.stringify(payload),
     })
     const data = await res.json().catch(() => ({}))
     if (!res.ok) {
@@ -4605,6 +4642,7 @@
     const status = form.querySelector('.tier-status');
     const tier = form.dataset.tier;
     const submitBtn = form.querySelector('button[type="submit"]');
+    const inviteInput = form.querySelector('[data-invite-code]');
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -4622,6 +4660,7 @@
           email: email.value.trim(),
           tier,
           source: 'waitlist',
+          inviteCode: inviteInput ? inviteInput.value : '',
         });
         const n = data.totalReaders;
         const successMessage = tier === 'founding'
