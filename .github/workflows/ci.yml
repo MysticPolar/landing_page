@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run unit + smoke tests
+        run: node --test 'tests/*.test.js'
+
+      - name: Verify SQL migrations have no obvious issues
+        run: |
+          # Light syntactic sanity — ensure each migration ends with a newline
+          # and contains no leftover merge markers.
+          for f in supabase/migrations/*.sql; do
+            if grep -qE '^(<<<<<<<|=======|>>>>>>>) ' "$f"; then
+              echo "::error file=$f::contains merge conflict markers"
+              exit 1
+            fi
+            tail -c 1 "$f" | od -c | grep -q '\\n' || {
+              echo "::error file=$f::does not end with a newline"
+              exit 1
+            }
+          done

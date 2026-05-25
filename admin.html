@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Owlpo · Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root { --paper:#f6f0e6; --ink:#1c1812; --soft:#4b4138; --wax:#8b3a2e; --rule:rgba(28,24,18,.14); --good:#2c6d3a; }
+    *{box-sizing:border-box}
+    html,body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:14px;line-height:1.5;}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+    h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.8rem;margin:0 0 16px;}
+    h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.35rem;margin:32px 0 12px;border-bottom:1px solid var(--rule);padding-bottom:6px;}
+    .stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
+    .stat{background:#fffaf2;border:1px solid var(--rule);border-radius:8px;padding:12px 14px;}
+    .stat .n{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.8rem;line-height:1;}
+    .stat .l{font-size:11px;text-transform:uppercase;letter-spacing:0.12em;color:var(--soft);margin-top:4px;}
+    table{width:100%;border-collapse:collapse;font-size:13px;background:#fffaf2;border:1px solid var(--rule);border-radius:8px;overflow:hidden;}
+    th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--rule);}
+    th{background:rgba(28,24,18,.04);font-weight:600;text-transform:uppercase;letter-spacing:.08em;font-size:11px;}
+    tr:last-child td{border-bottom:none;}
+    .toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px;}
+    input,select{padding:6px 10px;border:1px solid var(--rule);border-radius:6px;background:#fffaf2;font-family:inherit;font-size:13px;}
+    .btn{padding:6px 12px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:6px;cursor:pointer;font-family:inherit;font-size:13px;}
+    .btn.ghost{background:transparent;color:var(--ink);}
+    .mono{font-family:'Courier New',monospace;font-size:12px;}
+    .pill{display:inline-block;padding:2px 8px;border-radius:100px;font-size:11px;letter-spacing:.05em;}
+    .pill.free{background:rgba(28,24,18,.08);}
+    .pill.founding{background:rgba(200,156,75,.18);color:#5d4400;}
+    .status-line{padding:48px 0;text-align:center;color:var(--soft);}
+    .err{color:var(--wax);}
+    .row-actions{display:flex;gap:6px;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Owlpo Admin</h1>
+    <div id="root"><div class="status-line">Loading…</div></div>
+  </div>
+
+  <script>
+    const root = document.getElementById('root');
+
+    function escapeHtml(s) {
+      return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+        ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    async function api(path, opts = {}) {
+      const r = await fetch(path, { credentials: 'same-origin', ...opts });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(j.error || 'request failed');
+      return j;
+    }
+
+    async function loadOverview() {
+      const j = await api('/api/admin-overview');
+      const c = j.counts;
+      return `
+        <div class="stats">
+          <div class="stat"><div class="n">${c.usersFree ?? '—'}</div><div class="l">Free users</div></div>
+          <div class="stat"><div class="n">${c.usersFounding ?? '—'}</div><div class="l">Founding</div></div>
+          <div class="stat"><div class="n">${c.waitlist ?? '—'}</div><div class="l">Waitlist</div></div>
+          <div class="stat"><div class="n">${c.emailsPending ?? '—'}</div><div class="l">Emails pending</div></div>
+          <div class="stat"><div class="n">${c.emailsFailed ?? '—'}</div><div class="l">Emails failed</div></div>
+          <div class="stat"><div class="n">${c.logins24hSuccess ?? '—'}</div><div class="l">Logins 24h</div></div>
+          <div class="stat"><div class="n">${c.logins24hFailure ?? '—'}</div><div class="l">Failed 24h</div></div>
+        </div>
+      `;
+    }
+
+    async function loadUsers(filters) {
+      const params = new URLSearchParams();
+      if (filters.tier) params.set('tier', filters.tier);
+      if (filters.search) params.set('search', filters.search);
+      params.set('limit', '50');
+      const j = await api('/api/admin-users?' + params.toString());
+      const rows = (j.users || []).map(u => `
+        <tr>
+          <td class="mono">${escapeHtml(u.email)}</td>
+          <td>${escapeHtml(u.display_name || '')}</td>
+          <td><span class="pill ${u.tier}">${u.tier}</span></td>
+          <td>${u.tier === 'founding'
+                ? '#' + String(u.founding_seat_number).padStart(2, '0')
+                : '#' + u.free_seat_number}</td>
+          <td>#${u.effective_seat_number}</td>
+          <td>${u.email_verified_at ? '✓' : '—'}</td>
+          <td>${(u.enrolled_at || '').slice(0,10)}</td>
+          <td class="row-actions">
+            <button class="btn ghost" data-resend="${u.id}">Resend welcome</button>
+          </td>
+        </tr>
+      `).join('');
+      return `<table>
+        <thead><tr><th>Email</th><th>Name</th><th>Tier</th><th>Seat#</th><th>Effective</th><th>Verified</th><th>Enrolled</th><th></th></tr></thead>
+        <tbody>${rows || '<tr><td colspan="8" class="status-line">No users.</td></tr>'}</tbody>
+      </table>`;
+    }
+
+    async function mintCode(form) {
+      const out = {
+        maxUses: form.maxUses.value ? Number(form.maxUses.value) : 1,
+        expiresInDays: form.expiresInDays.value ? Number(form.expiresInDays.value) : null,
+        note: form.note.value || null,
+      };
+      const j = await api('/api/admin-mint-system-code', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(out),
+      });
+      return j.code;
+    }
+
+    async function render() {
+      try {
+        const overview = await loadOverview();
+        const filters = { tier: '', search: '' };
+        const users = await loadUsers(filters);
+
+        root.innerHTML = `
+          ${overview}
+
+          <h2>Mint system code</h2>
+          <form id="mintForm" class="toolbar">
+            <input name="maxUses" type="number" min="1" placeholder="Max uses (default 1)">
+            <input name="expiresInDays" type="number" min="0" placeholder="Expires in days (blank = never)">
+            <input name="note" type="text" placeholder="Note (e.g. 'launch wave')">
+            <button class="btn" type="submit">Mint</button>
+            <span id="mintOut" class="mono"></span>
+          </form>
+
+          <h2>Users</h2>
+          <div class="toolbar">
+            <select id="filterTier">
+              <option value="">All tiers</option>
+              <option value="free">Free</option>
+              <option value="founding">Founding</option>
+            </select>
+            <input id="filterSearch" type="text" placeholder="Email contains…">
+            <button class="btn ghost" id="filterApply">Apply</button>
+          </div>
+          <div id="usersTable">${users}</div>
+        `;
+
+        document.getElementById('mintForm').addEventListener('submit', async e => {
+          e.preventDefault();
+          const out = document.getElementById('mintOut');
+          out.textContent = 'Minting…';
+          try {
+            const code = await mintCode(e.target);
+            out.innerHTML = '<strong>' + escapeHtml(code) + '</strong> (copied to clipboard)';
+            try { await navigator.clipboard.writeText(code); } catch {}
+          } catch (err) {
+            out.innerHTML = '<span class="err">' + escapeHtml(err.message) + '</span>';
+          }
+        });
+
+        document.getElementById('filterApply').addEventListener('click', async () => {
+          const tier = document.getElementById('filterTier').value;
+          const search = document.getElementById('filterSearch').value;
+          document.getElementById('usersTable').innerHTML = '<div class="status-line">Loading…</div>';
+          try {
+            document.getElementById('usersTable').innerHTML = await loadUsers({ tier, search });
+            attachUserActions();
+          } catch (err) {
+            document.getElementById('usersTable').innerHTML = '<div class="status-line err">' + escapeHtml(err.message) + '</div>';
+          }
+        });
+
+        attachUserActions();
+      } catch (err) {
+        if (String(err.message).includes('Forbidden')) {
+          root.innerHTML = '<div class="status-line err">You are not authorized to view this page.</div>';
+        } else if (String(err.message).includes('log in')) {
+          root.innerHTML = '<div class="status-line">Please <a href="/">log in</a> first.</div>';
+        } else {
+          root.innerHTML = '<div class="status-line err">' + escapeHtml(err.message) + '</div>';
+        }
+      }
+    }
+
+    function attachUserActions() {
+      document.querySelectorAll('[data-resend]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          btn.disabled = true;
+          btn.textContent = 'Sending…';
+          try {
+            await api('/api/admin-resend-welcome', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId: btn.dataset.resend }),
+            });
+            btn.textContent = 'Sent';
+          } catch (err) {
+            btn.textContent = 'Failed';
+            console.error(err);
+          }
+        });
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>

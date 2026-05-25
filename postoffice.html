@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Postoffice · Owlry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Lora:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper: #f6f0e6;
+      --ink: #1c1812;
+      --ink-soft: #4b4138;
+      --wax: #8b3a2e;
+      --wax-deep: #6b2a20;
+      --rule: rgba(28, 24, 18, 0.16);
+      --rule-soft: rgba(28, 24, 18, 0.08);
+      --gold: #c89c4b;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: 'Lora', Georgia, serif;
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--wax); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+    .brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: 22px;
+      letter-spacing: 0.02em;
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .brand a { color: var(--ink); }
+
+    .hero {
+      text-align: center;
+      padding: 28px 0 12px;
+    }
+    .hero-eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      font-size: 11px;
+      color: var(--ink-soft);
+      margin-bottom: 14px;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      line-height: 1.1;
+      margin: 0 0 8px;
+    }
+    .hero-sub {
+      color: var(--ink-soft);
+      margin: 0;
+    }
+
+    .seat-card {
+      margin: 32px auto 0;
+      padding: 24px 28px;
+      background: #fffaf2;
+      border: 1px solid var(--rule);
+      border-radius: 14px;
+      text-align: center;
+      box-shadow: 0 2px 0 rgba(28,24,18,0.04);
+    }
+    .seat-tier {
+      display: inline-block;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--wax);
+      padding: 3px 10px;
+      border: 1px solid var(--wax);
+      border-radius: 100px;
+      margin-bottom: 14px;
+    }
+    .seat-tier.founding { color: #5d4400; border-color: var(--gold); background: rgba(200,156,75,0.08); }
+    .seat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 600;
+      font-size: clamp(2.4rem, 6vw, 3.2rem);
+      line-height: 1;
+      margin: 4px 0 6px;
+      letter-spacing: 0.02em;
+    }
+    .boost-line {
+      color: var(--ink-soft);
+      font-size: 14px;
+    }
+    .boost-line .spark { color: var(--gold); }
+
+    h2.section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      font-size: 1.5rem;
+      margin: 48px 0 14px;
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: 6px;
+    }
+
+    .codes {
+      display: grid;
+      gap: 10px;
+    }
+    .code-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: #fdf7ec;
+      border: 1px solid var(--rule);
+      border-radius: 10px;
+    }
+    .code-row.used { background: transparent; opacity: 0.62; }
+    .code-string {
+      font-family: 'Inter', -apple-system, sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      font-size: 15px;
+    }
+    .code-status {
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+    .code-actions { display: flex; gap: 8px; }
+
+    button.btn, .btn {
+      font-family: 'Lora', serif;
+      font-size: 14px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--ink);
+      background: var(--ink);
+      color: var(--paper);
+      cursor: pointer;
+      transition: opacity .15s ease;
+    }
+    button.btn.ghost, .btn.ghost {
+      background: transparent;
+      color: var(--ink);
+    }
+    button.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    button.btn.copied { background: var(--wax); border-color: var(--wax); }
+
+    .actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .request-more {
+      margin-top: 24px;
+      padding: 18px 20px;
+      border: 1px dashed var(--rule);
+      border-radius: 12px;
+      background: rgba(200,156,75,0.06);
+    }
+    .request-more h3 {
+      margin: 0 0 6px;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      font-size: 1.25rem;
+    }
+    .request-more p { margin: 0; color: var(--ink-soft); font-size: 14px; }
+    .request-counter { font-weight: 600; color: var(--ink); }
+
+    .upgrade-cta {
+      margin-top: 36px;
+      padding: 22px;
+      border: 1px solid var(--wax);
+      background: rgba(139,58,46,0.05);
+      border-radius: 12px;
+      text-align: center;
+    }
+    .upgrade-cta h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      font-size: 1.4rem;
+      margin: 0 0 6px;
+    }
+
+    .footer-note {
+      margin-top: 64px;
+      text-align: center;
+      color: var(--ink-soft);
+      font-size: 13px;
+      border-top: 1px solid var(--rule-soft);
+      padding-top: 24px;
+    }
+    .footer-note a { color: var(--ink-soft); }
+
+    .status-line {
+      text-align: center;
+      padding: 80px 0;
+      color: var(--ink-soft);
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--ink);
+      color: var(--paper);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity .2s ease;
+      pointer-events: none;
+      z-index: 50;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="brand"><a href="/">Owlpo · The Owl's Postoffice</a></div>
+
+    <div id="root">
+      <div class="status-line" id="loadingLine">Opening your postoffice…</div>
+    </div>
+
+    <div class="footer-note">
+      The Owlpo app is being composed. We'll write when it's time.
+      <br>
+      <a href="#" id="logoutLink">Sign out</a>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const root = document.getElementById('root');
+    const loadingLine = document.getElementById('loadingLine');
+    const toastEl = document.getElementById('toast');
+
+    function showToast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toastEl.classList.remove('show'), 1800);
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[c]));
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        return navigator.clipboard.writeText(text);
+      }
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      return Promise.resolve();
+    }
+
+    async function fetchPostoffice() {
+      const res = await fetch('/api/my-postoffice', { credentials: 'same-origin' });
+      if (res.status === 401) { window.location.href = '/#login'; return null; }
+      if (!res.ok) throw new Error('Could not load your postoffice.');
+      return res.json();
+    }
+
+    function render(data) {
+      const u = data.user;
+      const isFounding = u.tier === 'founding';
+
+      const boostLine = data.boostTotal < 0
+        ? `<div class="boost-line">You've moved up <strong>${-data.boostTotal}</strong> spots <span class="spark">✦</span></div>`
+        : `<div class="boost-line">Share your codes to move up the queue <span class="spark">✦</span></div>`;
+
+      const upgradeCta = !isFounding ? `
+        <div class="upgrade-cta">
+          <h3>Become a Founding Member</h3>
+          <p>Founding seats are numbered separately and get 10 invitations to share. <strong>${escapeHtml(window.OWLPO_FOUNDING_PRICE || '$99')}</strong>.</p>
+          <div class="actions-row" style="justify-content:center;">
+            <button class="btn" id="upgradeBtn">Upgrade my seat</button>
+          </div>
+        </div>` : '';
+
+      const requestMore = isFounding && data.founding ? (function () {
+        const f = data.founding;
+        const disabled = !f.canRequestMore;
+        const why = f.unused > 0
+          ? `Use your remaining ${f.unused} code${f.unused === 1 ? '' : 's'} before requesting more.`
+          : f.lifetimeMinted >= 100
+            ? "You've shared the lifetime maximum of 100 codes. Thank you, owl."
+            : 'Ready when you are.';
+        return `
+          <div class="request-more">
+            <h3>Request 10 more codes</h3>
+            <p>Lifetime: <span class="request-counter">${f.lifetimeMinted}/100</span>. ${escapeHtml(why)}</p>
+            <div class="actions-row">
+              <button class="btn" id="requestMoreBtn"${disabled ? ' disabled' : ''}>Mint 10 more</button>
+            </div>
+          </div>`;
+      })() : '';
+
+      const codeRows = data.codes.length === 0
+        ? '<p style="color:var(--ink-soft);">No codes yet — they were minted at signup.</p>'
+        : data.codes.map(c => {
+            const status = c.used
+              ? `Used${c.usedByDisplay ? ' by ' + escapeHtml(c.usedByDisplay) : ''}`
+              : 'Unused';
+            return `
+              <div class="code-row${c.used ? ' used' : ''}">
+                <div>
+                  <div class="code-string">${escapeHtml(c.code)}</div>
+                  <div class="code-status">${status}</div>
+                </div>
+                <div class="code-actions">
+                  ${c.used ? '' : `<button class="btn ghost copy-btn" data-code="${escapeHtml(c.code)}">Copy</button>`}
+                </div>
+              </div>`;
+          }).join('');
+
+      root.innerHTML = `
+        <div class="hero">
+          <div class="hero-eyebrow">Welcome home</div>
+          <h1 class="hero-title">${escapeHtml(u.name)}</h1>
+          <p class="hero-sub">${escapeHtml(u.email)}</p>
+        </div>
+
+        <div class="seat-card">
+          <span class="seat-tier${isFounding ? ' founding' : ''}">${isFounding ? 'Founding Member' : 'Reader'}</span>
+          <div class="seat-number">${escapeHtml(u.seat || '—')}</div>
+          ${boostLine}
+        </div>
+
+        <h2 class="section-title">Your dispatches</h2>
+        <div class="codes">${codeRows}</div>
+
+        ${requestMore}
+        ${upgradeCta}
+      `;
+
+      root.querySelectorAll('.copy-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const code = btn.dataset.code;
+          const shareText = `You're invited to Owlpo. Use my code: ${code}\nhttps://owlpo.example/?code=${encodeURIComponent(code)}`;
+          await copyText(shareText);
+          btn.textContent = 'Copied';
+          btn.classList.add('copied');
+          showToast('Invitation copied — paste it anywhere.');
+          setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+        });
+      });
+
+      const upgradeBtn = document.getElementById('upgradeBtn');
+      if (upgradeBtn) upgradeBtn.addEventListener('click', async () => {
+        upgradeBtn.disabled = true;
+        upgradeBtn.textContent = 'Opening checkout…';
+        try {
+          const r = await fetch('/api/checkout-create-session', {
+            method: 'POST', credentials: 'same-origin',
+          });
+          const j = await r.json();
+          if (!r.ok || !j.url) throw new Error(j.error || 'Checkout unavailable.');
+          window.location.href = j.url;
+        } catch (err) {
+          showToast(err.message || 'Could not start checkout.');
+          upgradeBtn.disabled = false;
+          upgradeBtn.textContent = 'Upgrade my seat';
+        }
+      });
+
+      const requestMoreBtn = document.getElementById('requestMoreBtn');
+      if (requestMoreBtn) requestMoreBtn.addEventListener('click', async () => {
+        requestMoreBtn.disabled = true;
+        requestMoreBtn.textContent = 'Minting…';
+        try {
+          const r = await fetch('/api/founding-codes-request-more', {
+            method: 'POST', credentials: 'same-origin',
+          });
+          const j = await r.json();
+          if (!r.ok) throw new Error(j.error || 'Could not mint more codes.');
+          showToast('10 fresh codes minted.');
+          const data2 = await fetchPostoffice();
+          if (data2) render(data2);
+        } catch (err) {
+          showToast(err.message);
+          requestMoreBtn.disabled = false;
+          requestMoreBtn.textContent = 'Mint 10 more';
+        }
+      });
+    }
+
+    async function boot() {
+      try {
+        const data = await fetchPostoffice();
+        if (!data) return;
+        render(data);
+
+        // Show post-upgrade toast.
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('upgraded') === '1') {
+          setTimeout(() => showToast('Welcome, founding member.'), 200);
+        } else if (params.get('upgrade') === 'cancelled') {
+          setTimeout(() => showToast('Checkout cancelled — no changes.'), 200);
+        }
+      } catch (err) {
+        loadingLine.textContent = err.message || 'Could not open your postoffice.';
+      }
+    }
+
+    document.getElementById('logoutLink').addEventListener('click', async e => {
+      e.preventDefault();
+      try {
+        await fetch('/api/auth-logout', { method: 'POST', credentials: 'same-origin' });
+      } catch {}
+      window.location.href = '/';
+    });
+
+    boot();
+  </script>
+</body>
+</html>

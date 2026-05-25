@@ -1,9 +1,20 @@
 /**
  * Waitlist signup via Supabase PostgREST.
  * Optional invite codes validated against public.invitation_codes.
+ *
+ * Invite-code validation logic lives in lib/invite-codes.js so that the
+ * signup endpoint (where the code is required) and the waitlist endpoint
+ * (where it is optional) share one source of truth.
  */
 
 const { normalizeSupabaseUrl, authHeaders } = require('../lib/supabase-rest')
+const {
+  validateInvite,
+  bumpInviteUses,
+  fetchInviteRow,
+} = require('../lib/invite-codes')
+const { pickClientIp } = require('../lib/sessions')
+const { enforceRateLimits, PRESETS } = require('../lib/rate-limit')
 
 async function parseErrorBody(res) {
   const text = await res.text()
@@ -17,40 +28,6 @@ async function parseErrorBody(res) {
     message = text
   }
   return { code, message, status: res.status }
-}
-
-function normalizeInvite(raw) {
-  if (raw == null || String(raw).trim() === '') return ''
-  return String(raw).trim().toUpperCase()
-}
-
-async function fetchInviteRow(baseUrl, key, codeUpper) {
-  const res = await fetch(
-    `${baseUrl}/rest/v1/invitation_codes?code=eq.${encodeURIComponent(
-      codeUpper
-    )}&select=id,max_uses,uses_count,expires_at,active`,
-    { headers: { apikey: key, Authorization: `Bearer ${key}` } }
-  )
-  if (!res.ok) return null
-  const rows = await res.json()
-  return rows[0] || null
-}
-
-async function validateInvite(baseUrl, key, rawInvite) {
-  const code = normalizeInvite(rawInvite)
-  if (!code) return { ok: true, code: '', row: null }
-
-  const row = await fetchInviteRow(baseUrl, key, code)
-  if (!row || !row.active) {
-    return { ok: false, error: 'That invitation code is not valid.' }
-  }
-  if (row.expires_at && Date.parse(row.expires_at) < Date.now()) {
-    return { ok: false, error: 'That invitation code has expired.' }
-  }
-  if (row.max_uses != null && row.uses_count >= row.max_uses) {
-    return { ok: false, error: 'That invitation code has already been used.' }
-  }
-  return { ok: true, code, row }
 }
 
 async function fetchSignupByEmail(baseUrl, key, email) {
@@ -94,22 +71,6 @@ async function updateSignup(baseUrl, key, email, patch) {
   if (res.ok) return { ok: true }
   const err = await parseErrorBody(res)
   return { ok: false, ...err }
-}
-
-async function bumpInviteUses(baseUrl, key, row) {
-  const next = row.uses_count + 1
-  const res = await fetch(
-    `${baseUrl}/rest/v1/invitation_codes?id=eq.${encodeURIComponent(row.id)}`,
-    {
-      method: 'PATCH',
-      headers: {
-        ...authHeaders(key),
-        Prefer: 'return=minimal',
-      },
-      body: JSON.stringify({ uses_count: next }),
-    }
-  )
-  return res.ok
 }
 
 async function countSignups(baseUrl, key) {
@@ -177,8 +138,20 @@ module.exports = async (req, res) => {
     console.error('SUPABASE_URL must start with https://', baseUrl)
     return res.status(500).json({ error: 'Server is not configured.' })
   }
+  const ip = pickClientIp(req)
 
-  const inv = await validateInvite(baseUrl, key, body.inviteCode)
+  // Rate limit: 10 / hour per IP. No per-email limit (some users legitimately
+  // re-submit a few times to fix typos).
+  const rl = await enforceRateLimits(baseUrl, key, PRESETS.waitlist(ip))
+  if (!rl.ok) {
+    return res.status(429).json({
+      error: 'Too many submissions. Please try again later.',
+      retryAfterSeconds: rl.blocked.retryAfterSeconds,
+    })
+  }
+
+  // Invite code is optional on the public waitlist endpoint.
+  const inv = await validateInvite(baseUrl, key, body.inviteCode, { required: false })
   if (!inv.ok) return badRequest(res, inv.error)
 
   const inviteStored = inv.code || null

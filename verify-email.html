@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Verify email · Owlpo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --paper:#f6f0e6; --ink:#1c1812; --soft:#4b4138; --wax:#8b3a2e; }
+    html,body{margin:0;background:var(--paper);color:var(--ink);font-family:'Lora',Georgia,serif;line-height:1.55;}
+    .wrap{max-width:480px;margin:0 auto;padding:96px 24px;text-align:center;}
+    h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:2rem;margin:0 0 16px;}
+    .ok{color:#2c6d3a;}
+    .err{color:var(--wax);}
+    a{color:var(--wax);}
+    .btn{display:inline-block;margin-top:18px;padding:10px 22px;background:var(--ink);color:var(--paper);text-decoration:none;border-radius:8px;font-size:15px;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 id="title">Verifying your email…</h1>
+    <p id="msg"></p>
+    <p><a href="/postoffice.html" id="cta" style="display:none;" class="btn">Go to my Postoffice</a></p>
+  </div>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token') || '';
+    const title = document.getElementById('title');
+    const msg   = document.getElementById('msg');
+    const cta   = document.getElementById('cta');
+
+    (async function () {
+      if (!token) {
+        title.textContent = 'Invalid link';
+        msg.textContent = 'This verification link is missing or invalid.';
+        msg.className = 'err';
+        return;
+      }
+      try {
+        const r = await fetch('/api/auth-verify-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        });
+        const j = await r.json();
+        if (!r.ok) throw new Error(j.error || 'Could not verify.');
+        title.textContent = 'Email verified';
+        msg.textContent = 'Thank you. Your email is now confirmed.';
+        msg.className = 'ok';
+        cta.style.display = 'inline-block';
+      } catch (err) {
+        title.textContent = 'Verification failed';
+        msg.textContent = err.message;
+        msg.className = 'err';
+      }
+    })();
+  </script>
+</body>
+</html>
