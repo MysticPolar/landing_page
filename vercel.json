@@ -4,5 +4,16 @@
     "api/*.js": {
       "maxDuration": 10
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/admin-overview",             "destination": "/api/admin?op=overview" },
+    { "source": "/api/admin-users",                "destination": "/api/admin?op=users" },
+    { "source": "/api/admin-mint-system-code",     "destination": "/api/admin?op=mint" },
+    { "source": "/api/admin-resend-welcome",       "destination": "/api/admin?op=resend" },
+    { "source": "/api/checkout-create-session",    "destination": "/api/founding?op=checkout" },
+    { "source": "/api/founding-codes-request-more","destination": "/api/founding?op=request-more" },
+    { "source": "/api/auth-forgot",                "destination": "/api/auth-password?op=forgot" },
+    { "source": "/api/auth-reset",                 "destination": "/api/auth-password?op=reset" },
+    { "source": "/api/auth-verify-email-start",    "destination": "/api/auth-verify-email?op=start" }
+  ]
 }
