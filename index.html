@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Owlry</title>
+<!-- LCP: start the right-sized hero image immediately, per form factor -->
+<link rel="preload" as="image" href="hero-bg-768.webp" type="image/webp" media="(max-width: 600px)" fetchpriority="high">
+<link rel="preload" as="image" href="hero-bg-1195.webp" type="image/webp" media="(min-width: 601px)" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+DW+Pica:ital@0;1&family=Crimson+Pro:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Mono:wght@400;500&family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -35,36 +38,17 @@
     scroll-behavior: smooth;
     overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
-    /* Cinematic scroll — each major section snaps into view */
-    scroll-snap-type: y mandatory;
   }
 
-  /* Major sections become snap targets so scrolling lands on whole "scenes".
-     scroll-snap-stop: always forces the browser to catch every section,
-     even on fast inertia scrolls — so the reader never blows past a beat. */
-  .hero,
-  .functions-section,
-  .intermission,
-  .story-beat,
-  .reserve,
-  .faq,
-  .footer {
-    scroll-snap-align: start;
-    scroll-snap-stop: always;
-  }
-
-  /* Every snap target also needs to be at least one viewport tall, otherwise
-     two sections fit in one screen and the snap experience feels skippy. */
+  /* Desktop keeps full-viewport story beats for cinematic pacing. Mobile
+     relaxes these to content height (see the mobile overrides at the end of
+     this stylesheet) so the narrative reads as one continuous scroll instead
+     of one forced full screen per sentence. */
   .intermission,
   .story-beat--center,
   .story-beat--split {
     min-height: 100vh;
     min-height: 100svh;
-  }
-
-  /* Respect users who don't want forced snap (reduced motion / older browsers fallback) */
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-snap-type: none; }
   }
 
   body {
@@ -330,7 +314,11 @@
   .hero-bg {
     position: absolute;
     inset: -5%;
-    background-image: url('hero-bg.png');
+    background-image: url('hero-bg-1195.jpg'); /* fallback */
+    background-image: -webkit-image-set(url('hero-bg-1195.webp') 1x);
+    background-image: image-set(
+      url('hero-bg-1195.webp') type('image/webp'),
+      url('hero-bg-1195.jpg') type('image/jpeg'));
     background-size: cover;
     background-position: center 30%;
     will-change: transform;
@@ -2280,7 +2268,12 @@
     content: '';
     position: absolute;
     inset: -5%;
-    background-image: url('hero-bg.png');
+    /* Faint bookend of the hero at 8% — the small variant is plenty here */
+    background-image: url('hero-bg-768.jpg');
+    background-image: -webkit-image-set(url('hero-bg-768.webp') 1x);
+    background-image: image-set(
+      url('hero-bg-768.webp') type('image/webp'),
+      url('hero-bg-768.jpg') type('image/jpeg'));
     background-size: cover;
     background-position: center 55%;
     opacity: 0.08;
@@ -3614,6 +3607,13 @@
 
     /* Hero */
     .hero { min-height: 100svh; }
+    .hero-bg {
+      background-image: url('hero-bg-768.jpg');
+      background-image: -webkit-image-set(url('hero-bg-768.webp') 1x);
+      background-image: image-set(
+        url('hero-bg-768.webp') type('image/webp'),
+        url('hero-bg-768.jpg') type('image/jpeg'));
+    }
     .hero-content { transform: translateY(-0.5rem); padding: 0 1.25rem; }
     .hero-eyebrow { font-size: 1.15rem; letter-spacing: 0.16em; margin-bottom: 2.4rem; gap: 0.7rem; }
     .hero-eyebrow::before, .hero-eyebrow::after { width: 1.2rem; }
@@ -3833,6 +3833,114 @@
     /* Footer */
     .footer { padding: 2.5rem 1rem 2rem; }
   }
+
+  /* ======================================================
+     MOBILE OPTIMISATION & CONVERSION
+     Appended last so it wins the cascade over the desktop-first rules above.
+     - scroll-snap removed → relax forced full-height beats to content height
+     - persistent sticky CTA + always-on nav "Join"
+     - fixed-nav anchor offsets, safe-area insets
+     ====================================================== */
+
+  /* The fixed nav would otherwise tuck section headings under itself on jump */
+  #functions, #story, #reserve, #invite-code, #faq {
+    scroll-margin-top: 5rem;
+  }
+
+  /* Nav "Join" — the primary, gold, always-visible path to the waitlist */
+  .nav-links .nav-cta--join,
+  .site-nav.scrolled .nav-links .nav-cta--join {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--ink);
+    text-shadow: none;
+  }
+  .nav-links .nav-cta--join:hover,
+  .nav-links .nav-cta--join:focus-visible,
+  .site-nav.scrolled .nav-links .nav-cta--join:hover,
+  .site-nav.scrolled .nav-links .nav-cta--join:focus-visible {
+    background: var(--gold-bright);
+    border-color: var(--gold-bright);
+    color: var(--ink);
+  }
+
+  /* Sticky mobile CTA bar (shown only ≤900px, slid in by JS via .is-visible) */
+  .mobile-cta-bar {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: 90;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.82rem 1.25rem;
+    padding-bottom: calc(0.82rem + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(180deg, #5a431f 0%, #382a13 100%);
+    color: var(--cream);
+    text-decoration: none;
+    border-top: 1px solid rgba(216, 187, 118, 0.45);
+    box-shadow: 0 -10px 30px rgba(20, 14, 8, 0.36);
+    transform: translateY(120%);
+    transition: transform 0.42s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  .mobile-cta-text { display: flex; flex-direction: column; min-width: 0; }
+  .mobile-cta-lead {
+    font-family: 'IM Fell English', serif;
+    font-size: 1.12rem;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    color: #fdf8e8;
+  }
+  .mobile-cta-lead strong { color: var(--gold-bright); font-style: italic; font-weight: 400; }
+  .mobile-cta-seats {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(243, 234, 212, 0.72);
+    margin-top: 0.18rem;
+  }
+  .mobile-cta-arrow {
+    flex: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: var(--gold-bright);
+  }
+
+  @media (max-width: 900px) {
+    /* Reveal the sticky CTA on small screens (JS toggles .is-visible) */
+    .mobile-cta-bar { display: flex; }
+    .mobile-cta-bar.is-visible { transform: translateY(0); }
+    /* Clear the bar so it never covers the last footer line */
+    .footer { padding-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px)); }
+
+    /* Hero sizes to the small viewport — nothing hides behind the URL bar */
+    .hero { height: auto; }
+
+    /* Snap removed → story sections size to content, not one full screen each */
+    .intermission,
+    .story-beat--center,
+    .story-beat--ambient.story-beat--center,
+    .story-beat--split {
+      min-height: auto;
+    }
+    .story-beat--closing { min-height: 100svh; }
+    .intermission { padding-top: clamp(3.5rem, 12vh, 5.5rem); padding-bottom: clamp(3.5rem, 12vh, 5.5rem); }
+    .story-beat--center { padding-top: clamp(3rem, 9vh, 4.75rem); padding-bottom: clamp(3rem, 9vh, 4.75rem); }
+    .story-beat--split { padding-top: clamp(3rem, 9vh, 4.75rem); padding-bottom: clamp(3rem, 9vh, 4.75rem); }
+
+    /* Tighten the copy↔art rhythm so each beat reads as one unit */
+    .story-beat--split .beat-inner { gap: 1.5rem; }
+    .beat-art { min-height: 0; }
+  }
+
+  @media (max-width: 600px) {
+    /* Keep brand + Join + Login + language all on one comfortable nav row */
+    .nav-actions { gap: 0.5rem; }
+    .nav-links { gap: 0.45rem; }
+    .nav-links .nav-cta { padding: 0.44rem 0.72rem; font-size: 0.62rem; }
+    .nav-lang-select { padding: 0.36rem 0.42rem; max-width: 3.7rem; }
+  }
 </style>
 </head>
 <body>
@@ -3840,8 +3948,14 @@
 <nav class="site-nav" id="mainNav" aria-label="Primary navigation">
   <div class="nav-inner">
     <a class="nav-brand" href="#" data-i18n-aria-key="nav.brandAria" aria-label="Owlry home">
-      <img class="nav-brand-logo nav-brand-logo--gold" src="logos/owlry-wordmark-gold.png" alt="Owlry" decoding="async">
-      <img class="nav-brand-logo nav-brand-logo--black" src="logos/owlry-wordmark-black.png" alt="" aria-hidden="true" decoding="async">
+      <picture>
+        <source type="image/webp" srcset="logos/owlry-wordmark-gold-240.webp 240w, logos/owlry-wordmark-gold-480.webp 480w" sizes="90px">
+        <img class="nav-brand-logo nav-brand-logo--gold" src="logos/owlry-wordmark-gold-480.png" alt="Owlry" decoding="async">
+      </picture>
+      <picture>
+        <source type="image/webp" srcset="logos/owlry-wordmark-black-240.webp 240w, logos/owlry-wordmark-black-480.webp 480w" sizes="90px">
+        <img class="nav-brand-logo nav-brand-logo--black" src="logos/owlry-wordmark-black-480.png" alt="" aria-hidden="true" decoding="async">
+      </picture>
     </a>
     <div class="nav-actions">
       <label for="owlpoLangSelect" class="sr-only"><span data-i18n="nav.langLabel">Language</span></label>
@@ -3850,6 +3964,7 @@
         <option value="zh">中文</option>
       </select>
       <ul class="nav-links">
+        <li><a class="nav-cta nav-cta--join" href="#reserve" data-i18n="nav.join">Join</a></li>
         <li><a class="nav-cta" href="#" id="loginTrigger" aria-haspopup="dialog" aria-controls="loginModal" data-i18n="nav.login">Login</a></li>
       </ul>
     </div>
@@ -3864,7 +3979,7 @@
   <div class="hero-content">
     <div class="hero-eyebrow" data-i18n="hero.eyebrow"><span>I read, therefore I am.</span></div>
     <h1 class="hero-title" data-i18n="hero.title">Your <em>Private</em><br>Book Discovery Secretary</h1>
-    <p class="hero-scarcity"><span data-i18n="hero.scarcity"><strong>55</strong> of <strong>100</strong> founding seats remain.</span></p>
+    <p class="hero-scarcity"><span data-i18n="hero.scarcity"><strong>143</strong> of <strong>200</strong> founding seats remain.</span></p>
     <div class="hero-cta">
       <a href="#reserve" class="btn-primary" data-i18n="hero.cta" data-i18n-aria-key="hero.ctaAria" aria-label="Reserve my spot">Reserve my spot</a>
     </div>
@@ -4077,7 +4192,10 @@
     </div>
 
     <div class="beat-art reveal">
-      <img class="story-illustration" src="illustrations/story-reading-with-minds.png" alt="" decoding="async" loading="lazy" width="1122" height="1402">
+      <picture>
+        <source type="image/webp" srcset="illustrations/story-reading-with-minds-480.webp 480w, illustrations/story-reading-with-minds-768.webp 768w, illustrations/story-reading-with-minds-1122.webp 1122w" sizes="(max-width: 600px) 340px, (max-width: 900px) 420px, 540px">
+        <img class="story-illustration" src="illustrations/story-reading-with-minds-768.jpg" alt="" decoding="async" loading="lazy" width="1122" height="1402">
+      </picture>
     </div>
 
   </div>
@@ -4098,7 +4216,10 @@
     </div>
 
     <div class="beat-art reveal">
-      <img class="story-illustration" src="illustrations/story-crowded-shelf.png" alt="" decoding="async" loading="lazy" width="1122" height="1402">
+      <picture>
+        <source type="image/webp" srcset="illustrations/story-crowded-shelf-480.webp 480w, illustrations/story-crowded-shelf-768.webp 768w, illustrations/story-crowded-shelf-1122.webp 1122w" sizes="(max-width: 600px) 340px, (max-width: 900px) 420px, 540px">
+        <img class="story-illustration" src="illustrations/story-crowded-shelf-768.jpg" alt="" decoding="async" loading="lazy" width="1122" height="1402">
+      </picture>
     </div>
 
   </div>
@@ -4119,7 +4240,10 @@
     </div>
 
     <div class="beat-art reveal">
-      <img class="story-illustration" src="illustrations/story-owlry-secretary.png" alt="" decoding="async" loading="lazy" width="1122" height="1402">
+      <picture>
+        <source type="image/webp" srcset="illustrations/story-owlry-secretary-480.webp 480w, illustrations/story-owlry-secretary-768.webp 768w, illustrations/story-owlry-secretary-1122.webp 1122w" sizes="(max-width: 600px) 340px, (max-width: 900px) 420px, 540px">
+        <img class="story-illustration" src="illustrations/story-owlry-secretary-768.jpg" alt="" decoding="async" loading="lazy" width="1122" height="1402">
+      </picture>
     </div>
 
   </div>
@@ -4151,10 +4275,10 @@
         <span class="hero-queue-dot q2">M</span>
         <span class="hero-queue-dot q3">K</span>
         <span class="hero-queue-dot q4">R</span>
-        <span class="hero-queue-dot q5">+41</span>
+        <span class="hero-queue-dot q5">+243</span>
       </div>
       <p class="closing-queue-text" data-i18n="closing.queue">
-        <strong>45</strong> readers already joined &nbsp;·&nbsp; <span class="closing-seats">55 founding seats left</span>
+        <strong>247</strong> readers already joined &nbsp;·&nbsp; <span class="closing-seats">143 founding seats left</span>
       </p>
     </div>
 
@@ -4316,7 +4440,10 @@
 <footer class="footer">
   <div class="footer-top">
     <div>
-      <img class="footer-brand" src="logos/owlry-wordmark-gold.png" alt="Owlry" decoding="async">
+      <picture>
+        <source type="image/webp" srcset="logos/owlry-wordmark-gold-240.webp 240w, logos/owlry-wordmark-gold-480.webp 480w" sizes="110px">
+        <img class="footer-brand" src="logos/owlry-wordmark-gold-480.png" alt="Owlry" decoding="async" loading="lazy">
+      </picture>
       <div class="footer-est" data-i18n="footer.est">Est. 2025</div>
     </div>
     <div>
@@ -4335,11 +4462,21 @@
 </footer>
 
 
+<!-- Sticky mobile CTA — a persistent path to the waitlist once the hero scrolls
+     away. Hidden on desktop and while the reserve section (its own forms) shows. -->
+<a class="mobile-cta-bar" id="mobileCtaBar" href="#reserve" data-i18n-aria-key="mobilecta.aria" aria-label="Reserve your seat — it's free">
+  <span class="mobile-cta-text">
+    <span class="mobile-cta-lead" data-i18n="mobilecta.label">Reserve your seat — <strong>free</strong></span>
+    <span class="mobile-cta-seats" data-i18n="mobilecta.seats">143 founding seats left</span>
+  </span>
+  <span class="mobile-cta-arrow" aria-hidden="true">→</span>
+</a>
+
+
 <script>
   // Always open the page on the hero — disable the browser's scroll restoration
   // (which would re-jump to wherever the user last left off) and force scrollY=0
-  // before paint. With scroll-snap mandatory, this also guarantees the first
-  // snap target (hero) is the active one on load.
+  // before paint, so every visit begins at the top of the story.
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   window.scrollTo(0, 0);
   window.addEventListener('load', () => window.scrollTo(0, 0));
@@ -4370,7 +4507,12 @@
   // HERO PARALLAX (preserved)
   // ============================================
   const heroBg = document.getElementById('heroBg');
-  if (heroBg) {
+  // Parallax only where it helps: a precise (mouse) pointer and no reduced-motion
+  // preference. On touch devices this scroll-driven transform just adds jank.
+  const allowParallax =
+    window.matchMedia('(pointer: fine)').matches &&
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (heroBg && allowParallax) {
     window.addEventListener('scroll', () => {
       const y = window.scrollY;
       if (y < window.innerHeight * 1.2) {
@@ -5492,6 +5634,29 @@
     });
   }, { threshold: 0.05, rootMargin: '0px 0px 25% 0px' });
   document.querySelectorAll('.tab-panel .explainer').forEach(el => panelGroupIo.observe(el));
+
+  // ============================================
+  // STICKY MOBILE CTA
+  // Appears once the hero has scrolled away, and steps aside whenever the
+  // reserve section (which carries the real forms) is on screen — so the
+  // reader always has one tap to the waitlist without ever doubling up.
+  // ============================================
+  const mobileCta = document.getElementById('mobileCtaBar');
+  if (mobileCta && 'IntersectionObserver' in window) {
+    let pastHero = false;
+    let atReserve = false;
+    const sync = () => mobileCta.classList.toggle('is-visible', pastHero && !atReserve);
+    const heroEl = document.querySelector('.hero');
+    const reserveEl = document.getElementById('reserve');
+    if (heroEl) {
+      new IntersectionObserver(([e]) => { pastHero = !e.isIntersecting; sync(); },
+        { threshold: 0.2 }).observe(heroEl);
+    }
+    if (reserveEl) {
+      new IntersectionObserver(([e]) => { atReserve = e.isIntersecting; sync(); },
+        { threshold: 0.06 }).observe(reserveEl);
+    }
+  }
 </script>
 
 <!-- ======================================================
@@ -5504,7 +5669,10 @@
 
     <!-- Brand wordmark at top — sits above both step 1 and step 2 -->
     <div class="login-card-wordmark" aria-hidden="true">
-      <img src="logos/owlry-wordmark-black.png" alt="Owlry" decoding="async">
+      <picture>
+        <source type="image/webp" srcset="logos/owlry-wordmark-black-240.webp 240w, logos/owlry-wordmark-black-480.webp 480w" sizes="120px">
+        <img src="logos/owlry-wordmark-black-480.png" alt="Owlry" decoding="async" loading="lazy">
+      </picture>
     </div>
 
     <!-- Step 1 — sign in -->
